@@ -1,5 +1,6 @@
 [build]
-  publish = "."
+  command = "mkdir -p dist && sed -e \"s|__WHATS_NUMBER__|${WHATS_NUMBER:-}|g\" -e \"s|__GA_MEASUREMENT_ID__|${GA_MEASUREMENT_ID:-}|g\" index.html > dist/index.html"
+  publish = "dist"
 
 [[headers]]
   for = "/*"

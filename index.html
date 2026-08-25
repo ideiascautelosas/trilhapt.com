@@ -305,7 +305,7 @@
   .maintenance-email:hover{color:var(--ink);}
 </style>
 </head>
-<body>
+<body data-whats-number="__WHATS_NUMBER__" data-ga-measurement-id="__GA_MEASUREMENT_ID__">
 
 <nav class="top">
   <a href="#top" class="brand"><span class="brand-dot"></span>TrilhaPT</a>
@@ -548,7 +548,10 @@
 // ============================================================
 const MAINTENANCE_MODE = true;
 
-const WHATS_NUMBER = "351928264249"; // +351 928 264 249
+const CONFIG = {
+  WHATS_NUMBER: document.body.dataset.whatsNumber || "",
+  GA_MEASUREMENT_ID: document.body.dataset.gaMeasurementId || ""
+};
 
 const translations = {
   pt: {
@@ -757,7 +760,7 @@ function applyLang(lang){
   });
 
   const waText = encodeURIComponent(dict.whatsText);
-  const waUrl = `https://wa.me/${WHATS_NUMBER}?text=${waText}`;
+  const waUrl = `https://wa.me/${CONFIG.WHATS_NUMBER}?text=${waText}`;
   document.getElementById("whatsCta").href = waUrl;
   document.getElementById("whatsCta2").href = waUrl;
 
@@ -794,8 +797,6 @@ document.getElementById("whatsCta").addEventListener("click", ()=> trackWhatsApp
 document.getElementById("whatsCta2").addEventListener("click", ()=> trackWhatsAppClick("cta_band"));
 
 // ---------- Google Analytics (GA4), só carrega após consentimento ----------
-const GA_MEASUREMENT_ID = "G-XXXXXXXXXX"; // TODO: substitui pelo teu Measurement ID real do GA4
-
 function getCookie(name){
   try{
     const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
@@ -811,18 +812,18 @@ function setCookie(name, value, days){
 }
 
 function loadAnalytics(){
-  if(!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID.includes("XXXX")){
-    console.warn("TrilhaPT: GA_MEASUREMENT_ID ainda não foi configurado - Analytics não vai carregar.");
+  if(!CONFIG.GA_MEASUREMENT_ID){
+    console.warn("TrilhaPT: GA_MEASUREMENT_ID não configurado - Analytics não vai carregar.");
     return;
   }
   const s = document.createElement("script");
   s.async = true;
-  s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+  s.src = `https://www.googletagmanager.com/gtag/js?id=${CONFIG.GA_MEASUREMENT_ID}`;
   document.head.appendChild(s);
   window.dataLayer = window.dataLayer || [];
   window.gtag = function(){ window.dataLayer.push(arguments); };
   window.gtag("js", new Date());
-  window.gtag("config", GA_MEASUREMENT_ID);
+  window.gtag("config", CONFIG.GA_MEASUREMENT_ID);
 }
 
 function initCookieConsent(){
