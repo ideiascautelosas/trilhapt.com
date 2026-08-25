@@ -19,6 +19,7 @@ O deploy injeta os parâmetros abaixo no `index.html` durante o build:
 
 - `WHATS_NUMBER`: número do WhatsApp sem `+` e sem espaços (ex.: `351928264249`)
 - `GA_MEASUREMENT_ID`: ID do GA4 (ex.: `G-XXXXXXXXXX`)
+- `MAINTENANCE_MODE`: `true` ou `false` para ativar/desativar a tela de manutenção
 
 ### Onde configurar no Netlify
 
@@ -29,6 +30,7 @@ No painel do site no Netlify:
 3. Adicionar:
 	- `WHATS_NUMBER`
 	- `GA_MEASUREMENT_ID`
+	- `MAINTENANCE_MODE`
 
 ## Como funciona a injeção no deploy
 
@@ -36,6 +38,7 @@ No `netlify.toml`, o comando de build substitui placeholders no `index.html`:
 
 - `__WHATS_NUMBER__`
 - `__GA_MEASUREMENT_ID__`
+- `__MAINTENANCE_MODE__`
 
 Depois publica a pasta `dist`.
 
@@ -50,7 +53,7 @@ Como o projeto é estático, podes abrir o `index.html` diretamente no navegador
 Se quiseres simular a injeção de variáveis localmente, executa:
 
 ```bash
-mkdir -p dist && sed -e "s|__WHATS_NUMBER__|351928264249|g" -e "s|__GA_MEASUREMENT_ID__|G-XXXXXXXXXX|g" index.html > dist/index.html
+mkdir -p dist && sed -e "s|__WHATS_NUMBER__|351928264249|g" -e "s|__GA_MEASUREMENT_ID__|G-XXXXXXXXXX|g" -e "s|__MAINTENANCE_MODE__|false|g" index.html > dist/index.html
 ```
 
 E abre `dist/index.html`.
@@ -59,4 +62,4 @@ E abre `dist/index.html`.
 
 - O GA4 só é carregado após aceite no banner de cookies.
 - Se `GA_MEASUREMENT_ID` não estiver definido, o analytics não é carregado.
-- O modo manutenção é controlado pela constante `MAINTENANCE_MODE` no `index.html`.
+- O modo manutenção é controlado pela variável de ambiente `MAINTENANCE_MODE` no deploy.

@@ -305,7 +305,7 @@
   .maintenance-email:hover{color:var(--ink);}
 </style>
 </head>
-<body data-whats-number="__WHATS_NUMBER__" data-ga-measurement-id="__GA_MEASUREMENT_ID__">
+<body data-whats-number="__WHATS_NUMBER__" data-ga-measurement-id="__GA_MEASUREMENT_ID__" data-maintenance-mode="__MAINTENANCE_MODE__">
 
 <nav class="top">
   <a href="#top" class="brand"><span class="brand-dot"></span>TrilhaPT</a>
@@ -546,11 +546,10 @@
 // MODO DE MANUTENÇÃO — muda para "false" no dia do lançamento,
 // faz commit + push, e o site completo fica visível automaticamente.
 // ============================================================
-const MAINTENANCE_MODE = true;
-
 const CONFIG = {
   WHATS_NUMBER: document.body.dataset.whatsNumber || "",
-  GA_MEASUREMENT_ID: document.body.dataset.gaMeasurementId || ""
+  GA_MEASUREMENT_ID: document.body.dataset.gaMeasurementId || "",
+  MAINTENANCE_MODE: (document.body.dataset.maintenanceMode || "true").toLowerCase() === "true"
 };
 
 const translations = {
@@ -779,7 +778,7 @@ const initialLang = translations[browserLang] ? browserLang : "pt";
 applyLang(initialLang);
 
 // ---------- Modo de manutenção ----------
-if(MAINTENANCE_MODE){
+if(CONFIG.MAINTENANCE_MODE){
   document.getElementById("maintenanceScreen").classList.add("show");
   document.getElementById("siteContent").style.display = "none";
 }
