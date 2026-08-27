@@ -1,882 +1,668 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TrilhaPT — Apoio a imigrantes em Portugal, no WhatsApp</title>
-<meta name="description" content="Esclarece dúvidas sobre visto, documentos e processos em Portugal, a qualquer hora, direto no WhatsApp.">
-<style>
-  :root{
-    --bg:#EEF3F0;
-    --ticket:#FCFAF3;
-    --ink:#16283A;
-    --ink-soft:#4B5B63;
-    --ink-faint:#8A9A96;
-    --stamp:#B23A2E;
-    --verified:#2B7A55;
-    --whats:#1F9D5C;
-    --line:#D6DED8;
-    --radius:14px;
-    --serif-num: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:var(--sans);
-    -webkit-font-smoothing:antialiased;
-    line-height:1.5;
-  }
-  img,svg{display:block;max-width:100%;}
-  a{color:inherit;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-
-  /* ---------- NAV ---------- */
-  nav.top{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:22px 24px;max-width:1080px;margin:0 auto;
-  }
-  .brand{
-    font-weight:800;font-size:20px;letter-spacing:-0.02em;color:var(--ink);
-    text-decoration:none;display:flex;align-items:center;gap:8px;
-  }
-  .brand-dot{width:9px;height:9px;border-radius:50%;background:var(--stamp);display:inline-block;}
-  .langsw{display:flex;gap:2px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;}
-  .langsw button{
-    border:none;background:transparent;padding:6px 13px;border-radius:999px;
-    font-family:var(--serif-num);font-size:12.5px;font-weight:600;letter-spacing:0.03em;
-    color:var(--ink-soft);cursor:pointer;transition:background .15s,color .15s;
-  }
-  .langsw button:hover{color:var(--ink);}
-  .langsw button.active{background:var(--ink);color:#fff;}
-  .langsw button:focus-visible{outline:2px solid var(--stamp);outline-offset:2px;}
-
-  /* ---------- HERO ---------- */
-  .hero{padding:32px 24px 60px;}
-  .hero-grid{
-    max-width:1080px;margin:0 auto;
-    display:grid;grid-template-columns:1.15fr 0.85fr;gap:56px;align-items:center;
-  }
-  .eyebrow{
-    font-family:var(--serif-num);font-size:12.5px;letter-spacing:0.11em;
-    color:var(--verified);font-weight:700;text-transform:uppercase;
-    display:flex;align-items:flex-start;gap:8px;margin-bottom:18px;
-  }
-  .eyebrow::before{content:"";width:7px;height:7px;min-width:7px;background:var(--verified);border-radius:50%;margin-top:5px;}
-  h1{
-    font-size:clamp(34px,5.2vw,58px);line-height:1.03;letter-spacing:-0.025em;
-    font-weight:800;margin:0 0 20px;color:var(--ink);
-  }
-  .hero p.lead{
-    font-size:18px;color:var(--ink-soft);max-width:480px;margin:0 0 28px;line-height:1.55;
-  }
-  .cta-row{display:flex;flex-direction:column;align-items:flex-start;gap:12px;}
-  .btn-whats{
-    display:inline-flex;align-items:center;gap:10px;
-    background:var(--whats);color:#fff;font-weight:700;font-size:16.5px;
-    padding:15px 26px;border-radius:11px;text-decoration:none;
-    box-shadow:0 6px 0 #167A46;transition:transform .12s,box-shadow .12s;
-  }
-  .btn-whats:hover{transform:translateY(2px);box-shadow:0 4px 0 #167A46;}
-  .btn-whats:focus-visible{outline:3px solid var(--ink);outline-offset:3px;}
-  .btn-whats svg{width:22px;height:22px;flex-shrink:0;}
-  .trust-micro{
-    font-family:var(--serif-num);font-size:12.5px;color:var(--ink-faint);
-    display:flex;flex-wrap:wrap;gap:6px 14px;
-  }
-
-  /* ---------- TICKET (signature element) ---------- */
-  .ticket-wrap{display:flex;justify-content:center;}
-  .ticket{
-    position:relative;background:var(--ticket);
-    width:270px;border-radius:10px;
-    box-shadow:0 22px 40px -18px rgba(22,40,58,0.35), 0 2px 0 rgba(22,40,58,0.04);
-    transform:rotate(-4deg);
-    padding:26px 22px 22px;
-    border:1px solid #EAE5D8;
-  }
-  .ticket::before,.ticket::after{
-    content:"";position:absolute;width:26px;height:26px;background:var(--bg);
-    border-radius:50%;top:50%;transform:translateY(-50%);
-  }
-  .ticket::before{left:-13px;}
-  .ticket::after{right:-13px;}
-  .ticket-label{
-    font-family:var(--serif-num);font-size:11px;letter-spacing:0.16em;
-    color:var(--ink-faint);text-transform:uppercase;margin-bottom:6px;
-  }
-  .ticket-number{
-    font-family:var(--serif-num);font-size:52px;font-weight:600;color:var(--ink);
-    position:relative;display:inline-block;letter-spacing:0.01em;
-  }
-  .ticket-number::after{
-    content:"";position:absolute;left:-4px;right:-4px;top:50%;height:3px;
-    background:var(--stamp);transform:rotate(-4deg);
-  }
-  .ticket-divider{
-    border:none;border-top:2px dashed #D8D2C2;margin:18px 0 16px;
-  }
-  .ticket-sub{font-family:var(--serif-num);font-size:12px;color:var(--ink-faint);}
-  .stamp{
-    position:absolute;right:14px;bottom:-18px;width:104px;height:104px;
-    transform:rotate(11deg);mix-blend-mode:multiply;opacity:0.88;
-  }
-  .stamp text{
-    font-family:var(--serif-num);font-size:9.2px;font-weight:700;fill:var(--stamp);
-    letter-spacing:2px;
-  }
-  .stamp circle{fill:none;stroke:var(--stamp);}
-  .stamp .center-word{font-size:14px;font-weight:800;fill:var(--stamp);}
-
-  /* ---------- SECTION GENERIC ---------- */
-  section{padding:64px 0;}
-  .section-inner{max-width:1080px;margin:0 auto;padding:0 24px;}
-  .section-head{max-width:560px;margin-bottom:40px;}
-  .section-eyebrow{
-    font-family:var(--serif-num);font-size:12px;letter-spacing:0.12em;color:var(--stamp);
-    text-transform:uppercase;font-weight:700;margin-bottom:10px;
-  }
-  h2{font-size:clamp(24px,3.2vw,32px);letter-spacing:-0.02em;margin:0 0 10px;font-weight:800;}
-  .section-head p{color:var(--ink-soft);font-size:16px;margin:0;}
-
-  /* ---------- CHAT MOCKUP ---------- */
-  .chatcard{
-    background:#fff;border-radius:18px;border:1px solid var(--line);
-    padding:22px;max-width:520px;box-shadow:0 18px 40px -28px rgba(22,40,58,0.35);
-  }
-  .bubble{
-    max-width:82%;padding:11px 15px;border-radius:14px;margin-bottom:12px;
-    font-size:14.5px;line-height:1.42;
-  }
-  .bubble.user{
-    background:var(--whats);color:#fff;margin-left:auto;border-bottom-right-radius:4px;
-  }
-  .bubble.bot{
-    background:#EEF1EC;color:var(--ink);border-bottom-left-radius:4px;
-  }
-  .bubble.bot .src{display:block;margin-top:6px;font-size:11.5px;color:var(--ink-faint);font-family:var(--serif-num);}
-
-  /* ---------- STEPS ---------- */
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
-  .step{
-    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
-    padding:24px 22px;
-  }
-  .step-num{
-    font-family:var(--serif-num);font-size:13px;color:var(--verified);font-weight:700;
-    margin-bottom:10px;
-  }
-  .step h3{font-size:17px;margin:0 0 8px;font-weight:800;letter-spacing:-0.01em;}
-  .step p{margin:0;color:var(--ink-soft);font-size:14.5px;line-height:1.5;}
-
-  /* ---------- TRUST GRID ---------- */
-  .trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 28px;}
-  .trust-item{display:flex;gap:12px;align-items:flex-start;}
-  .trust-item svg{flex-shrink:0;width:20px;height:20px;margin-top:2px;color:var(--verified);}
-  .trust-item p{margin:0;font-size:14.5px;color:var(--ink-soft);line-height:1.5;}
-  .trust-item strong{color:var(--ink);}
-
-  /* ---------- CTA BAND ---------- */
-  .ctaband{
-    background:var(--ink);border-radius:22px;padding:48px 40px;
-    display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
-  }
-  .ctaband h2{color:#fff;max-width:420px;}
-  .ctaband p{color:#B7C2C8;margin:8px 0 0;max-width:420px;font-size:15px;}
-
-  /* ---------- FOOTER ---------- */
-  footer{padding:36px 0 48px;border-top:1px solid var(--line);margin-top:8px;}
-  .footer-inner{
-    max-width:1080px;margin:0 auto;padding:0 24px;
-    display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;
-  }
-  .footer-inner .brand{margin-bottom:8px;}
-  .footer-note{font-size:13px;color:var(--ink-faint);max-width:440px;line-height:1.5;}
-  .footer-contact{font-family:var(--serif-num);font-size:13px;color:var(--ink-soft);text-align:right;}
-  .footer-contact div{margin-bottom:4px;}
-  .footer-contact a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line);}
-  .footer-contact a:hover{color:var(--ink);border-bottom-color:var(--ink-soft);}
-  .privacy-link{
-    border:none;background:none;padding:0;margin:0;
-    color:var(--ink-soft);font-family:var(--serif-num);font-size:13px;
-    border-bottom:1px solid var(--line);cursor:pointer;
-  }
-  .privacy-link:hover{color:var(--ink);border-bottom-color:var(--ink-soft);}
-  .privacy-link:focus-visible{outline:2px solid var(--stamp);outline-offset:2px;}
-
-  /* ---------- PRIVACY MODAL ---------- */
-  .privacy-modal-backdrop{
-    position:fixed;inset:0;z-index:70;
-    background:rgba(22,40,58,0.45);
-    display:flex;align-items:center;justify-content:center;
-    padding:20px;
-    opacity:0;pointer-events:none;transition:opacity .18s ease;
-  }
-  .privacy-modal-backdrop.show{opacity:1;pointer-events:auto;}
-  .privacy-modal{
-    width:min(560px,100%);background:#fff;border:1px solid var(--line);
-    border-radius:16px;padding:24px;
-    box-shadow:0 20px 40px -20px rgba(22,40,58,0.5);
-  }
-  .privacy-modal h2{margin:0 0 12px;}
-  .privacy-modal p{margin:0 0 12px;color:var(--ink-soft);font-size:14.5px;line-height:1.55;}
-  .privacy-modal ul{margin:0 0 14px;padding-left:20px;color:var(--ink-soft);}
-  .privacy-modal li{margin-bottom:8px;font-size:14.5px;line-height:1.5;}
-  .privacy-modal .cookie-btn{margin-top:6px;}
-
-  @media (max-width:860px){
-    .hero-grid{grid-template-columns:1fr;gap:40px;}
-    .ticket-wrap{order:-1;}
-    .ticket{transform:rotate(-2deg);}
-    .steps{grid-template-columns:1fr;}
-    .trust-grid{grid-template-columns:1fr;}
-    .ctaband{flex-direction:column;align-items:flex-start;}
-    .footer-inner{flex-direction:column;}
-    .footer-contact{text-align:left;}
-  }
-
-  @media (prefers-reduced-motion:reduce){
-    html{scroll-behavior:auto;}
-    .btn-whats{transition:none;}
-  }
-
-  /* ---------- COOKIE CONSENT ---------- */
-  .cookiebar{
-    position:fixed;left:16px;right:16px;bottom:16px;z-index:50;
-    max-width:640px;margin:0 auto;
-    background:var(--ink);color:#EAF0EE;
-    border-radius:14px;padding:18px 20px;
-    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-    box-shadow:0 18px 40px -12px rgba(0,0,0,0.4);
-    opacity:0;transform:translateY(12px);pointer-events:none;
-    transition:opacity .25s ease,transform .25s ease;
-  }
-  .cookiebar.show{opacity:1;transform:translateY(0);pointer-events:auto;}
-  .cookiebar p{margin:0;font-size:13.5px;line-height:1.5;color:#C7D2CE;flex:1;min-width:200px;}
-  .cookiebar-actions{display:flex;gap:10px;flex-shrink:0;}
-  .cookie-btn{
-    font-family:var(--sans);font-size:13.5px;font-weight:700;border-radius:8px;
-    padding:9px 16px;cursor:pointer;border:1px solid transparent;
-  }
-  .cookie-btn.solid{background:var(--verified);color:#fff;}
-  .cookie-btn.ghost{background:transparent;color:#C7D2CE;border-color:#3A4A52;}
-  .cookie-btn:focus-visible{outline:2px solid #fff;outline-offset:2px;}
-  @media (max-width:560px){
-    .cookiebar{flex-direction:column;align-items:stretch;}
-    .cookiebar-actions{justify-content:flex-end;}
-  }
-
-  /* ---------- TOPICS GRID ---------- */
-  .topics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-  .topic-card{
-    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
-    padding:20px 18px;
-  }
-  .topic-card svg{width:22px;height:22px;color:var(--verified);margin-bottom:13px;}
-  .topic-card h3{font-size:15px;margin:0 0 7px;font-weight:800;letter-spacing:-0.01em;}
-  .topic-card p{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
-  .topics-note{margin:22px 0 0;font-size:13.5px;color:var(--ink-faint);}
-
-  @media (max-width:860px){
-    .topics-grid{grid-template-columns:repeat(2,1fr);}
-  }
-  @media (max-width:480px){
-    .topics-grid{grid-template-columns:1fr;}
-  }
-
-  /* ---------- MAINTENANCE SCREEN ---------- */
-  .maintenance-screen{
-    display:none; /* controlado via JS (MAINTENANCE_MODE) */
-    min-height:80vh;align-items:center;justify-content:center;
-    padding:40px 24px;
-  }
-  .maintenance-screen.show{display:flex;}
-  .maintenance-card{max-width:480px;text-align:center;}
-  .maintenance-card .eyebrow{justify-content:center;}
-  .maintenance-card h1{font-size:clamp(28px,4.5vw,40px);margin-bottom:14px;}
-  .maintenance-card .lead{margin:0 auto 22px;color:var(--ink-soft);font-size:16px;}
-  .maintenance-email{
-    font-family:var(--serif-num);font-size:14px;color:var(--verified);
-    text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px;
-  }
-  .maintenance-email:hover{color:var(--ink);}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
 </head>
-<body data-whats-number="__WHATS_NUMBER__" data-ga-measurement-id="__GA_MEASUREMENT_ID__" data-maintenance-mode="__MAINTENANCE_MODE__">
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#ECF1EB;-webkit-font-smoothing:antialiased;font-family:'Schibsted Grotesk',-apple-system,sans-serif;}
+  a{color:#16283A;}
+  a:hover{color:#1F9D5C;}
+  @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.85);}}
+</style>
+</helmet>
 
-<nav class="top">
-  <a href="#top" class="brand"><span class="brand-dot"></span>TrilhaPT</a>
-  <div class="langsw" role="group" aria-label="Language selector">
-    <button type="button" data-lang="pt" class="active">PT</button>
-    <button type="button" data-lang="en">EN</button>
-    <button type="button" data-lang="es">ES</button>
+<div style="background:#ECF1EB;color:#16283A;line-height:1.5;min-height:100vh;">
+
+<nav style="position:sticky;top:0;z-index:40;background:rgba(236,241,235,0.88);backdrop-filter:blur(12px);border-bottom:1px solid #DCE3DB;">
+  <div style="max-width:1120px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+    <a href="#top" style="display:flex;align-items:center;gap:9px;text-decoration:none;color:#16283A;font-weight:800;font-size:19px;letter-spacing:-0.02em;">
+      <svg viewBox="0 0 100 100" aria-hidden="true" style="width:20px;height:20px;display:block;"><rect x="22" y="20" width="56" height="12" rx="6" fill="#16283A"></rect><rect x="43" y="38" width="14" height="10" rx="5" fill="#16283A"></rect><rect x="43" y="54" width="14" height="10" rx="5" fill="#16283A"></rect><rect x="43" y="70" width="14" height="10" rx="5" fill="#16283A"></rect><circle cx="50" cy="90" r="8" fill="#B23A2E"></circle></svg>
+      TrilhaPT
+    </a>
+    <div style="position:relative;">
+      <button type="button" aria-label="Language selector" aria-haspopup="listbox" aria-expanded="{{ langOpen }}" onClick="{{ toggleLang }}" style="display:flex;align-items:center;gap:8px;background:#FCFAF3;border:1px solid #DCE3DB;border-radius:999px;padding:7px 13px 7px 11px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12.5px;font-weight:500;letter-spacing:.06em;color:#16283A;transition:border-color .15s,background .15s;" style-hover="border-color:#B7C4B8;background:#fff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" style="width:15px;height:15px;display:block;color:#5D6C72;"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"></path></svg>
+        {{ langShort }}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="width:11px;height:11px;display:block;color:#8A9A96;"><path d="M6 9l6 6 6-6"></path></svg>
+      </button>
+      <sc-if value="{{ langOpen }}" hint-placeholder-val="{{ false }}">
+        <div role="listbox" style="position:absolute;right:0;top:calc(100% + 8px);min-width:196px;max-height:288px;overflow-y:auto;background:#fff;border:1px solid #DCE3DB;border-radius:14px;padding:6px;box-shadow:0 20px 40px -18px rgba(22,40,58,.4);display:flex;flex-direction:column;gap:2px;">
+          <sc-for list="{{ langOptions }}" as="opt" hint-placeholder-count="3">
+            <button type="button" role="option" onClick="{{ opt.select }}" style="{{ opt.rowStyle }}" style-hover="background:#F1F5F0">
+              <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;color:#8A9A96;width:22px;flex-shrink:0;">{{ opt.short }}</span>
+              <span style="flex:1;">{{ opt.label }}</span>
+              <span style="color:#2B7A55;font-size:13px;width:12px;">{{ opt.tick }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
   </div>
 </nav>
 
-<div class="maintenance-screen" id="maintenanceScreen">
-  <div class="maintenance-card">
-    <div class="eyebrow" data-i18n="maint.eyebrow">TrilhaPT · Portugal</div>
-    <h1 data-i18n="maint.headline">A preparar a tua senha.</h1>
-    <p class="lead" data-i18n="maint.sub">Estamos quase a abrir. Queres ser avisado no lançamento? Escreve-nos.</p>
-    <a href="mailto:geral@trilhapt.com" class="maintenance-email" data-i18n="footer.email">geral@trilhapt.com</a>
+<sc-if value="{{ isMaintenance }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:76vh;display:flex;align-items:center;justify-content:center;padding:48px 24px;">
+    <div style="max-width:520px;text-align:center;">
+      <div style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#2B7A55;font-weight:500;margin-bottom:18px;">{{ maintEyebrow }}</div>
+      <h1 style="font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-0.03em;font-weight:800;margin:0 0 16px;">{{ maintHeadline }}</h1>
+      <p style="font-size:17px;color:#4B5B63;margin:0 auto 26px;max-width:420px;">{{ maintSub }}</p>
+      <a href="mailto:geral@trilhapt.com" style="font-family:'DM Mono',monospace;font-size:14px;color:#2B7A55;text-decoration:none;border-bottom:1px solid currentColor;">{{ email }}</a>
+    </div>
   </div>
-</div>
+</sc-if>
 
-<div id="siteContent">
+<sc-if value="{{ showSite }}" hint-placeholder-val="{{ true }}">
+<div id="top">
 
-<header class="hero" id="top">
-  <div class="wrap hero-grid">
-    <div>
-      <div class="eyebrow" data-i18n="hero.eyebrow">Apoio para imigrantes em Portugal · Grátis</div>
-      <h1 data-i18n="hero.headline">A tua senha<br>já foi chamada.</h1>
-      <p class="lead" data-i18n="hero.lead">Esclarece dúvidas sobre visto, documentos e processos em Portugal — a qualquer hora, sem esperar em fila. Direto no WhatsApp.</p>
-      <div class="cta-row">
-        <a class="btn-whats" id="whatsCta" href="#" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.96-.93-.26-.1-.46-.15-.65.14-.19.29-.75.93-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.6-1.99-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.5.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.65-1.57-.89-2.15-.23-.56-.47-.48-.65-.49-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.42 0 1.43 1.03 2.82 1.17 3.01.15.19 2.03 3.1 4.92 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.81.11.55-.08 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"/><path d="M12.01 2C6.49 2 2 6.48 2 12c0 1.87.51 3.63 1.4 5.14L2 22l4.99-1.31A9.96 9.96 0 0 0 12.01 22C17.53 22 22 17.52 22 12S17.53 2 12.01 2zm0 18.1c-1.67 0-3.24-.46-4.58-1.27l-.33-.2-3.29.86.88-3.2-.21-.33A8.09 8.09 0 0 1 3.9 12c0-4.48 3.64-8.11 8.11-8.11 4.47 0 8.1 3.63 8.1 8.11 0 4.48-3.63 8.1-8.1 8.1z"/></svg>
-          <span data-i18n="hero.cta">Falar agora no WhatsApp</span>
-        </a>
-        <div class="trust-micro">
-          <span data-i18n="hero.t1">Grátis</span><span>·</span>
-          <span data-i18n="hero.t2">Fontes oficiais verificadas</span><span>·</span>
-          <span data-i18n="hero.t3">Sem registo</span>
+  <header style="padding:56px 24px 84px;">
+    <div style="max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:56px;align-items:center;">
+      <div style="flex:1 1 440px;min-width:0;">
+        <div style="display:inline-flex;align-items:center;gap:9px;background:#FCFAF3;border:1px solid #D9E2DA;border-radius:999px;padding:7px 15px 7px 12px;margin-bottom:26px;font-family:'DM Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#2B7A55;font-weight:500;">
+          <span style="width:7px;height:7px;border-radius:50%;background:#2B7A55;animation:pulseDot 2.4s ease-in-out infinite;"></span>
+          {{ heroEyebrow }}
+        </div>
+        <h1 style="font-size:clamp(42px,6vw,74px);line-height:0.98;letter-spacing:-0.035em;font-weight:800;margin:0 0 22px;">
+          {{ heroH1a }}<br>{{ heroH1b }}
+        </h1>
+        <p style="font-size:19px;color:#4B5B63;max-width:490px;margin:0 0 34px;line-height:1.55;text-wrap:pretty;">{{ heroLead }}</p>
+        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:18px;">
+          <a href="{{ waUrl }}" target="_blank" rel="noopener" onClick="{{ trackHero }}" style="display:inline-flex;align-items:center;gap:11px;background:#1F9D5C;color:#fff;font-weight:700;font-size:17px;padding:16px 28px;border-radius:12px;text-decoration:none;box-shadow:0 6px 0 #14764280, 0 12px 24px -12px rgba(22,40,58,.4);transition:transform .12s,box-shadow .12s;" style-hover="transform:translateY(2px);box-shadow:0 4px 0 #14764280, 0 8px 18px -12px rgba(22,40,58,.4)">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:22px;height:22px;display:block;"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.96-.93-.26-.1-.46-.15-.65.14-.19.29-.75.93-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.6-1.99-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.5.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.65-1.57-.89-2.15-.23-.56-.47-.48-.65-.49-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.42 0 1.43 1.03 2.82 1.17 3.01.15.19 2.03 3.1 4.92 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.81.11.55-.08 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"></path><path d="M12.01 2C6.49 2 2 6.48 2 12c0 1.87.51 3.63 1.4 5.14L2 22l4.99-1.31A9.96 9.96 0 0 0 12.01 22C17.53 22 22 17.52 22 12S17.53 2 12.01 2zm0 18.1c-1.67 0-3.24-.46-4.58-1.27l-.33-.2-3.29.86.88-3.2-.21-.33A8.09 8.09 0 0 1 3.9 12c0-4.48 3.64-8.11 8.11-8.11 4.47 0 8.1 3.63 8.1 8.11 0 4.48-3.63 8.1-8.1 8.1z"></path></svg>
+            {{ heroCta }}
+          </a>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-family:'DM Mono',monospace;font-size:12.5px;color:#8A9A96;">
+            <span>{{ heroT1 }}</span><span style="color:#C3CEC7;">/</span>
+            <span>{{ heroT2 }}</span><span style="color:#C3CEC7;">/</span>
+            <span>{{ heroT3 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1 1 300px;display:flex;justify-content:center;position:relative;">
+        <div style="position:absolute;top:26px;background:#F7F4EA;width:262px;height:210px;border-radius:12px;border:1px solid #E4DECF;transform:rotate(4.5deg);box-shadow:0 14px 30px -20px rgba(22,40,58,.4);"></div>
+        <div style="position:relative;background:#FCFAF3;width:284px;border-radius:12px;border:1px solid #E8E2D3;padding:28px 24px 26px;transform:rotate(-4deg);box-shadow:0 26px 46px -20px rgba(22,40,58,.4), 0 2px 0 rgba(22,40,58,.04);">
+          <div style="position:absolute;left:-13px;top:50%;width:26px;height:26px;border-radius:50%;background:#ECF1EB;transform:translateY(-50%);"></div>
+          <div style="position:absolute;right:-13px;top:50%;width:26px;height:26px;border-radius:50%;background:#ECF1EB;transform:translateY(-50%);"></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#A8A091;margin-bottom:4px;">
+            <span>{{ ticketLabel }}</span>
+            <span>2026</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:58px;line-height:1.05;font-weight:500;letter-spacing:.01em;position:relative;display:inline-block;">
+            {{ ticketNumber }}
+            <span style="position:absolute;left:-5px;right:-5px;top:52%;height:3px;background:#B23A2E;transform:rotate(-4deg);"></span>
+          </div>
+          <div style="border-top:2px dashed #DED8C7;margin:20px 0 16px;"></div>
+          <div style="font-family:'DM Mono',monospace;font-size:12px;color:#A8A091;letter-spacing:.04em;">{{ ticketSub }}</div>
+          {{ stampSvg }}
         </div>
       </div>
     </div>
+  </header>
 
-    <div class="ticket-wrap">
-      <div class="ticket">
-        <div class="ticket-label" data-i18n="ticket.label">Senha</div>
-        <div class="ticket-number">047</div>
-        <hr class="ticket-divider">
-        <div class="ticket-sub" data-i18n="ticket.sub">balcão · AIMA</div>
-        <svg class="stamp" viewBox="0 0 120 120">
-          <defs>
-            <path id="stampCircle" d="M 60,60 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"/>
-          </defs>
-          <circle cx="60" cy="60" r="50" stroke-width="1.4"/>
-          <circle cx="60" cy="60" r="42" stroke-width="1.4"/>
-          <text><textPath href="#stampCircle" startOffset="0%" data-i18n="ticket.stampring">★ CHAMADO ★ CHAMADO ★ CHAMADO</textPath></text>
-          <text x="60" y="65" text-anchor="middle" class="center-word" data-i18n="ticket.stampword">OK</text>
-        </svg>
+  <section id="perguntas" style="padding:20px 24px 84px;">
+    <div style="max-width:1120px;margin:0 auto;border-top:1px solid #DCE3DB;padding-top:56px;display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;">
+      <div style="flex:1 1 300px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#B23A2E;font-weight:500;margin-bottom:12px;">01 / {{ chatEyebrow }}</div>
+        <h2 style="font-size:clamp(26px,3.4vw,38px);line-height:1.08;letter-spacing:-0.028em;margin:0 0 12px;font-weight:800;">{{ chatTitle }}</h2>
+        <p style="color:#4B5B63;font-size:16.5px;margin:0;max-width:380px;text-wrap:pretty;">{{ chatSubtitle }}</p>
+      </div>
+      <div style="flex:1 1 420px;min-width:0;background:#fff;border:1px solid #DCE3DB;border-radius:20px;overflow:hidden;box-shadow:0 24px 46px -30px rgba(22,40,58,.45);">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #E7ECE6;background:#F8FAF7;">
+          <div style="width:36px;height:36px;border-radius:50%;background:#16283A;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 100 100" aria-hidden="true" style="width:16px;height:16px;display:block;"><rect x="22" y="20" width="56" height="12" rx="6" fill="#FCFAF3"></rect><rect x="43" y="38" width="14" height="10" rx="5" fill="#FCFAF3"></rect><rect x="43" y="54" width="14" height="10" rx="5" fill="#FCFAF3"></rect><rect x="43" y="70" width="14" height="10" rx="5" fill="#FCFAF3"></rect><circle cx="50" cy="90" r="8" fill="#B23A2E"></circle></svg>          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:14.5px;letter-spacing:-0.01em;">TrilhaPT</div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:#2B7A55;display:flex;align-items:center;gap:5px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:#2B7A55;animation:pulseDot 2.4s ease-in-out infinite;"></span>{{ onlineLabel }}
+            </div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#8A9A96;border:1px solid #DCE3DB;border-radius:999px;padding:4px 9px;">WhatsApp</div>
+        </div>
+        <div style="padding:22px 20px;background:#F3F6F1;display:flex;flex-direction:column;gap:14px;">
+          <div style="max-width:80%;margin-left:auto;background:#1F9D5C;color:#fff;padding:11px 15px;border-radius:15px 15px 5px 15px;font-size:14.5px;line-height:1.45;">
+            {{ chatQ1 }}
+            <span style="display:block;text-align:right;font-family:'DM Mono',monospace;font-size:10px;opacity:.75;margin-top:5px;">09:12 ✓✓</span>
+          </div>
+          <div style="max-width:84%;background:#fff;border:1px solid #E4E9E2;padding:12px 15px;border-radius:15px 15px 15px 5px;font-size:14.5px;line-height:1.45;">
+            {{ chatA1 }}
+            <span style="display:block;margin-top:8px;padding-top:8px;border-top:1px dashed #DDE4DC;font-family:'DM Mono',monospace;font-size:11px;color:#8A9A96;">{{ chatSrc1 }}</span>
+          </div>
+          <div style="max-width:80%;margin-left:auto;background:#1F9D5C;color:#fff;padding:11px 15px;border-radius:15px 15px 5px 15px;font-size:14.5px;line-height:1.45;">
+            {{ chatQ2 }}
+            <span style="display:block;text-align:right;font-family:'DM Mono',monospace;font-size:10px;opacity:.75;margin-top:5px;">09:14 ✓✓</span>
+          </div>
+          <div style="max-width:84%;background:#fff;border:1px solid #E4E9E2;padding:12px 15px;border-radius:15px 15px 15px 5px;font-size:14.5px;line-height:1.45;">
+            {{ chatA2 }}
+            <span style="display:block;margin-top:8px;padding-top:8px;border-top:1px dashed #DDE4DC;font-family:'DM Mono',monospace;font-size:11px;color:#8A9A96;">{{ chatSrc2 }}</span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</header>
+  </section>
 
-<section id="perguntas">
-  <div class="section-inner">
-    <div class="section-head">
-      <div class="section-eyebrow" data-i18n="chat.eyebrow">Em ação</div>
-      <h2 data-i18n="chat.title">O que já podes perguntar</h2>
-      <p data-i18n="chat.subtitle">Escreve como falas — sem termos técnicos, sem formulários.</p>
+  <section id="temas" style="padding:0 24px 84px;">
+    <div style="max-width:1120px;margin:0 auto;border-top:1px solid #DCE3DB;padding-top:56px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;margin-bottom:36px;">
+        <div style="max-width:560px;">
+          <div style="font-family:'DM Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#B23A2E;font-weight:500;margin-bottom:12px;">02 / {{ topicsEyebrow }}</div>
+          <h2 style="font-size:clamp(26px,3.4vw,38px);line-height:1.08;letter-spacing:-0.028em;margin:0 0 12px;font-weight:800;">{{ topicsTitle }}</h2>
+          <p style="color:#4B5B63;font-size:16.5px;margin:0;text-wrap:pretty;">{{ topicsSubtitle }}</p>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#8A9A96;">{{ langCodes }}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:14px;">
+        <div style="background:#fff;border:1px solid #DDE3DC;border-radius:14px;padding:20px 18px 22px;transition:transform .15s,box-shadow .15s;" style-hover="transform:translateY(-3px);box-shadow:0 16px 28px -22px rgba(22,40,58,.5)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:block;"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><path d="M14 3v4h4"></path><path d="M9 12h6"></path><path d="M9 16h6"></path></svg>
+            <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:#C3CEC7;">01</span>
+          </div>
+          <h3 style="font-size:15.5px;margin:0 0 7px;font-weight:700;letter-spacing:-0.015em;">{{ t1Title }}</h3>
+          <p style="margin:0;font-size:12.5px;color:#5D6C72;line-height:1.55;">{{ t1Items }}</p>
+        </div>
+        <div style="background:#fff;border:1px solid #DDE3DC;border-radius:14px;padding:20px 18px 22px;transition:transform .15s,box-shadow .15s;" style-hover="transform:translateY(-3px);box-shadow:0 16px 28px -22px rgba(22,40,58,.5)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:block;"><path d="M6 9h12M6 15h12M9 4 7 20M15 4l-2 16"></path></svg>
+            <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:#C3CEC7;">02</span>
+          </div>
+          <h3 style="font-size:15.5px;margin:0 0 7px;font-weight:700;letter-spacing:-0.015em;">{{ t2Title }}</h3>
+          <p style="margin:0;font-size:12.5px;color:#5D6C72;line-height:1.55;">{{ t2Items }}</p>
+        </div>
+        <div style="background:#fff;border:1px solid #DDE3DC;border-radius:14px;padding:20px 18px 22px;transition:transform .15s,box-shadow .15s;" style-hover="transform:translateY(-3px);box-shadow:0 16px 28px -22px rgba(22,40,58,.5)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:block;"><circle cx="12" cy="9" r="5"></circle><path d="M8.5 13.5 7 21l5-3 5 3-1.5-7.5"></path></svg>
+            <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:#C3CEC7;">03</span>
+          </div>
+          <h3 style="font-size:15.5px;margin:0 0 7px;font-weight:700;letter-spacing:-0.015em;">{{ t3Title }}</h3>
+          <p style="margin:0;font-size:12.5px;color:#5D6C72;line-height:1.55;">{{ t3Items }}</p>
+        </div>
+        <div style="background:#fff;border:1px solid #DDE3DC;border-radius:14px;padding:20px 18px 22px;transition:transform .15s,box-shadow .15s;" style-hover="transform:translateY(-3px);box-shadow:0 16px 28px -22px rgba(22,40,58,.5)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:block;"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>
+            <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:#C3CEC7;">04</span>
+          </div>
+          <h3 style="font-size:15.5px;margin:0 0 7px;font-weight:700;letter-spacing:-0.015em;">{{ t4Title }}</h3>
+          <p style="margin:0;font-size:12.5px;color:#5D6C72;line-height:1.55;">{{ t4Items }}</p>
+        </div>
+        <div style="background:#fff;border:1px solid #DDE3DC;border-radius:14px;padding:20px 18px 22px;transition:transform .15s,box-shadow .15s;" style-hover="transform:translateY(-3px);box-shadow:0 16px 28px -22px rgba(22,40,58,.5)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:block;"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="8" cy="12" r="2"></circle><path d="M13 10h5M13 14h5"></path></svg>
+            <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:#C3CEC7;">05</span>
+          </div>
+          <h3 style="font-size:15.5px;margin:0 0 7px;font-weight:700;letter-spacing:-0.015em;">{{ t5Title }}</h3>
+          <p style="margin:0;font-size:12.5px;color:#5D6C72;line-height:1.55;">{{ t5Items }}</p>
+        </div>
+        <div style="background:#fff;border:1px solid #DDE3DC;border-radius:14px;padding:20px 18px 22px;transition:transform .15s,box-shadow .15s;" style-hover="transform:translateY(-3px);box-shadow:0 16px 28px -22px rgba(22,40,58,.5)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:block;"><path d="M4 11 12 4l8 7"></path><path d="M6 10v10h12V10"></path></svg>
+            <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:#C3CEC7;">06</span>
+          </div>
+          <h3 style="font-size:15.5px;margin:0 0 7px;font-weight:700;letter-spacing:-0.015em;">{{ t6Title }}</h3>
+          <p style="margin:0;font-size:12.5px;color:#5D6C72;line-height:1.55;">{{ t6Items }}</p>
+        </div>
+        <div style="background:#fff;border:1px solid #DDE3DC;border-radius:14px;padding:20px 18px 22px;transition:transform .15s,box-shadow .15s;" style-hover="transform:translateY(-3px);box-shadow:0 16px 28px -22px rgba(22,40,58,.5)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#B23A2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:block;"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"></path></svg>
+            <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:#C3CEC7;">07</span>
+          </div>
+          <h3 style="font-size:15.5px;margin:0 0 7px;font-weight:700;letter-spacing:-0.015em;">{{ t7Title }}</h3>
+          <p style="margin:0;font-size:12.5px;color:#5D6C72;line-height:1.55;">{{ t7Items }}</p>
+        </div>
+        <div style="background:#fff;border:1px solid #DDE3DC;border-radius:14px;padding:20px 18px 22px;transition:transform .15s,box-shadow .15s;" style-hover="transform:translateY(-3px);box-shadow:0 16px 28px -22px rgba(22,40,58,.5)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:block;"><circle cx="7.5" cy="7.5" r="2.5"></circle><circle cx="16.5" cy="16.5" r="2.5"></circle><path d="M17 7 7 17"></path></svg>
+            <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:#C3CEC7;">08</span>
+          </div>
+          <h3 style="font-size:15.5px;margin:0 0 7px;font-weight:700;letter-spacing:-0.015em;">{{ t8Title }}</h3>
+          <p style="margin:0;font-size:12.5px;color:#5D6C72;line-height:1.55;">{{ t8Items }}</p>
+        </div>
+      </div>
+      <p style="margin:22px 0 0;font-size:13.5px;color:#8A9A96;font-family:'DM Mono',monospace;">{{ topicsNote }}</p>
     </div>
-    <div class="chatcard">
-      <div class="bubble user" data-i18n="chat.q1">Que documentos preciso para o visto de estudante?</div>
-      <div class="bubble bot" data-i18n="chat.a1">Precisas de carta de aceitação, comprovativo de meios de subsistência, seguro de saúde, alojamento e registo criminal.<span class="src" data-i18n="chat.src1">Fonte: AIMA</span></div>
-      <div class="bubble user" data-i18n="chat.q2">Como tiro o NIF?</div>
-      <div class="bubble bot" data-i18n="chat.a2">Pedes presencialmente num serviço de finanças, ou com um representante fiscal se ainda não estiveres em Portugal.<span class="src" data-i18n="chat.src2">Fonte: Portal das Finanças</span></div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section id="temas">
-  <div class="section-inner">
-    <div class="section-head">
-      <div class="section-eyebrow" data-i18n="topics.eyebrow">Cobertura completa</div>
-      <h2 data-i18n="topics.title">Tudo o que já podes perguntar</h2>
-      <p data-i18n="topics.subtitle">8 áreas, dezenas de situações reais — em português, inglês ou espanhol.</p>
-    </div>
-    <div class="topics-grid">
-      <div class="topic-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
-        <h3 data-i18n="topics.c1.title">Vistos e documentos</h3>
-        <p data-i18n="topics.c1.items">Estudante · Trabalho · Procura de emprego · Taxas</p>
+  <section id="como-funciona" style="padding:0 24px 84px;">
+    <div style="max-width:1120px;margin:0 auto;border-top:1px solid #DCE3DB;padding-top:56px;">
+      <div style="margin-bottom:36px;max-width:560px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#B23A2E;font-weight:500;margin-bottom:12px;">03 / {{ stepsEyebrow }}</div>
+        <h2 style="font-size:clamp(26px,3.4vw,38px);line-height:1.08;letter-spacing:-0.028em;margin:0;font-weight:800;">{{ stepsTitle }}</h2>
       </div>
-      <div class="topic-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9h12M6 15h12M9 4 7 20M15 4l-2 16"/></svg>
-        <h3 data-i18n="topics.c2.title">NIF e Segurança Social</h3>
-        <p data-i18n="topics.c2.items">NIF com representante · NISS online · Atribuição pela AIMA</p>
-      </div>
-      <div class="topic-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M8.5 13.5 7 21l5-3 5 3-1.5-7.5"/></svg>
-        <h3 data-i18n="topics.c3.title">Residência e AIMA</h3>
-        <p data-i18n="topics.c3.items">Marcações · Renovações · CPLP · Reagrupamento familiar</p>
-      </div>
-      <div class="topic-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
-        <h3 data-i18n="topics.c4.title">Saúde</h3>
-        <p data-i18n="topics.c4.items">SNS · Seguro de saúde</p>
-      </div>
-      <div class="topic-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 10h5M13 14h5"/></svg>
-        <h3 data-i18n="topics.c5.title">Carta de condução</h3>
-        <p data-i18n="topics.c5.items">União Europeia · OCDE/CPLP · Outros países</p>
-      </div>
-      <div class="topic-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/></svg>
-        <h3 data-i18n="topics.c6.title">Habitação</h3>
-        <p data-i18n="topics.c6.items">Arrendamento acessível · Apoiado · Concursos IHRU</p>
-      </div>
-      <div class="topic-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/></svg>
-        <h3 data-i18n="topics.c7.title">Segurança e burlas</h3>
-        <p data-i18n="topics.c7.items">Alertas da PJ · Phishing bancário · Burlas de arrendamento</p>
-      </div>
-      <div class="topic-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="7.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/><path d="M17 7 7 17"/></svg>
-        <h3 data-i18n="topics.c8.title">Impostos (IRS)</h3>
-        <p data-i18n="topics.c8.items">Código do IRS · Rendimentos do estrangeiro</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0;border-top:2px dashed #CDD6CD;">
+        <div style="padding:26px 28px 8px 0;border-right:1px dashed #CDD6CD;position:relative;">
+          <span style="position:absolute;top:-9px;left:0;width:16px;height:16px;border-radius:50%;background:#2B7A55;border:4px solid #ECF1EB;"></span>
+          <div style="font-family:'DM Mono',monospace;font-size:34px;font-weight:500;color:#C3CEC7;line-height:1;margin-bottom:14px;">01</div>
+          <h3 style="font-size:18px;margin:0 0 8px;font-weight:700;letter-spacing:-0.02em;">{{ s1Title }}</h3>
+          <p style="margin:0;color:#4B5B63;font-size:15px;line-height:1.55;max-width:280px;">{{ s1Desc }}</p>
+        </div>
+        <div style="padding:26px 28px 8px;border-right:1px dashed #CDD6CD;position:relative;">
+          <span style="position:absolute;top:-9px;left:28px;width:16px;height:16px;border-radius:50%;background:#2B7A55;border:4px solid #ECF1EB;"></span>
+          <div style="font-family:'DM Mono',monospace;font-size:34px;font-weight:500;color:#C3CEC7;line-height:1;margin-bottom:14px;">02</div>
+          <h3 style="font-size:18px;margin:0 0 8px;font-weight:700;letter-spacing:-0.02em;">{{ s2Title }}</h3>
+          <p style="margin:0;color:#4B5B63;font-size:15px;line-height:1.55;max-width:280px;">{{ s2Desc }}</p>
+        </div>
+        <div style="padding:26px 0 8px 28px;position:relative;">
+          <span style="position:absolute;top:-9px;left:28px;width:16px;height:16px;border-radius:50%;background:#B23A2E;border:4px solid #ECF1EB;"></span>
+          <div style="font-family:'DM Mono',monospace;font-size:34px;font-weight:500;color:#C3CEC7;line-height:1;margin-bottom:14px;">03</div>
+          <h3 style="font-size:18px;margin:0 0 8px;font-weight:700;letter-spacing:-0.02em;">{{ s3Title }}</h3>
+          <p style="margin:0;color:#4B5B63;font-size:15px;line-height:1.55;max-width:280px;">{{ s3Desc }}</p>
+        </div>
       </div>
     </div>
-    <p class="topics-note" data-i18n="topics.note">Se a tua pergunta não estiver aqui, encaminhamos-te para apoio humano.</p>
-  </div>
-</section>
+  </section>
 
-<section id="como-funciona">
-  <div class="section-inner">
-    <div class="section-head">
-      <div class="section-eyebrow" data-i18n="steps.eyebrow">O processo</div>
-      <h2 data-i18n="steps.title">Como funciona</h2>
+  <section id="confianca" style="padding:0 24px 84px;">
+    <div style="max-width:1120px;margin:0 auto;border-top:1px solid #DCE3DB;padding-top:56px;display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;">
+      <div style="flex:1 1 280px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#B23A2E;font-weight:500;margin-bottom:12px;">04 / {{ trustEyebrow }}</div>
+        <h2 style="font-size:clamp(26px,3.4vw,38px);line-height:1.08;letter-spacing:-0.028em;margin:0;font-weight:800;">{{ trustTitle }}</h2>
+      </div>
+      <div style="flex:1 1 420px;min-width:0;display:flex;flex-direction:column;">
+        <div style="display:flex;gap:16px;align-items:flex-start;padding:0 0 20px;border-bottom:1px solid #DCE3DB;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="2.2" stroke-linecap="round" style="width:19px;height:19px;flex-shrink:0;margin-top:3px;display:block;"><path d="M20 6 9 17l-5-5"></path></svg>
+          <p style="margin:0;font-size:15.5px;color:#4B5B63;line-height:1.55;text-wrap:pretty;"><strong style="color:#16283A;font-weight:700;">{{ trust1Strong }}</strong>{{ trust1Rest }}</p>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start;padding:20px 0;border-bottom:1px solid #DCE3DB;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="2.2" stroke-linecap="round" style="width:19px;height:19px;flex-shrink:0;margin-top:3px;display:block;"><path d="M20 6 9 17l-5-5"></path></svg>
+          <p style="margin:0;font-size:15.5px;color:#4B5B63;line-height:1.55;text-wrap:pretty;"><strong style="color:#16283A;font-weight:700;">{{ trust2Strong }}</strong>{{ trust2Rest }}</p>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start;padding:20px 0;border-bottom:1px solid #DCE3DB;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#B23A2E" stroke-width="2.2" stroke-linecap="round" style="width:19px;height:19px;flex-shrink:0;margin-top:3px;display:block;"><path d="M12 8v5M12 16.5v.5M12 3l9 17H3z"></path></svg>
+          <p style="margin:0;font-size:15.5px;color:#4B5B63;line-height:1.55;text-wrap:pretty;"><strong style="color:#16283A;font-weight:700;">{{ trust3Strong }}</strong>{{ trust3Rest }}</p>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start;padding:20px 0 0;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2B7A55" stroke-width="2.2" stroke-linecap="round" style="width:19px;height:19px;flex-shrink:0;margin-top:3px;display:block;"><path d="M20 6 9 17l-5-5"></path></svg>
+          <p style="margin:0;font-size:15.5px;color:#4B5B63;line-height:1.55;text-wrap:pretty;"><strong style="color:#16283A;font-weight:700;">{{ trust4Strong }}</strong>{{ trust4Rest }}</p>
+        </div>
+      </div>
     </div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num" data-i18n="steps.n1">01</div>
-        <h3 data-i18n="steps.t1">Escreves a tua dúvida</h3>
-        <p data-i18n="steps.d1">Em linguagem normal, no idioma que preferires.</p>
-      </div>
-      <div class="step">
-        <div class="step-num" data-i18n="steps.n2">02</div>
-        <h3 data-i18n="steps.t2">Recebes uma resposta verificada</h3>
-        <p data-i18n="steps.d2">Baseada em fontes oficiais, nunca inventada.</p>
-      </div>
-      <div class="step">
-        <div class="step-num" data-i18n="steps.n3">03</div>
-        <h3 data-i18n="steps.t3">És encaminhado se for preciso</h3>
-        <p data-i18n="steps.d3">Casos complexos passam para apoio humano.</p>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section id="confianca">
-  <div class="section-inner">
-    <div class="section-head">
-      <div class="section-eyebrow" data-i18n="trust.eyebrow">Sem letra pequena</div>
-      <h2 data-i18n="trust.title">Porque podes confiar</h2>
-    </div>
-    <div class="trust-grid">
-      <div class="trust-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-        <p data-i18n="trust.i1"><strong>Fontes oficiais</strong> — conteúdo confirmado junto da AIMA, Segurança Social e SNS.</p>
-      </div>
-      <div class="trust-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-        <p data-i18n="trust.i2"><strong>Nunca inventa</strong> — se não sabe, diz-te e encaminha-te para apoio humano.</p>
-      </div>
-      <div class="trust-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-        <p data-i18n="trust.i3"><strong>Não é aconselhamento jurídico</strong> — para casos complexos, fala sempre com um profissional.</p>
-      </div>
-      <div class="trust-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-        <p data-i18n="trust.i4"><strong>Sempre grátis</strong> — para quem usa o serviço, sem exceção.</p>
+  <section id="cta-final" style="padding:0 24px 80px;">
+    <div style="max-width:1120px;margin:0 auto;">
+      <div style="position:relative;background:#16283A;border-radius:24px;padding:56px 44px;display:flex;align-items:center;justify-content:space-between;gap:36px;flex-wrap:wrap;overflow:hidden;">
+        <div style="position:absolute;left:0;right:0;top:0;height:0;border-top:2px dashed #2E4256;"></div>
+        <div style="position:absolute;left:-14px;top:50%;width:28px;height:28px;border-radius:50%;background:#ECF1EB;transform:translateY(-50%);"></div>
+        <div style="position:absolute;right:-14px;top:50%;width:28px;height:28px;border-radius:50%;background:#ECF1EB;transform:translateY(-50%);"></div>
+        <div style="position:relative;">
+          <div style="font-family:'DM Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#7FAF97;margin-bottom:14px;">{{ ticketLabel }} {{ ticketNumber }}</div>
+          <h2 style="color:#fff;font-size:clamp(28px,3.6vw,42px);line-height:1.05;letter-spacing:-0.03em;margin:0;font-weight:800;max-width:460px;">{{ ctaTitle }}</h2>
+          <p style="color:#A9BAC2;margin:12px 0 0;max-width:420px;font-size:16px;">{{ ctaSub }}</p>
+        </div>
+        <a href="{{ waUrl }}" target="_blank" rel="noopener" onClick="{{ trackBand }}" style="position:relative;display:inline-flex;align-items:center;gap:11px;background:#1F9D5C;color:#fff;font-weight:700;font-size:17px;padding:16px 28px;border-radius:12px;text-decoration:none;box-shadow:0 6px 0 #147642;transition:transform .12s,box-shadow .12s;" style-hover="transform:translateY(2px);box-shadow:0 4px 0 #147642">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:22px;height:22px;display:block;"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.96-.93-.26-.1-.46-.15-.65.14-.19.29-.75.93-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.6-1.99-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.5.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.65-1.57-.89-2.15-.23-.56-.47-.48-.65-.49-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.42 0 1.43 1.03 2.82 1.17 3.01.15.19 2.03 3.1 4.92 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.81.11.55-.08 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"></path><path d="M12.01 2C6.49 2 2 6.48 2 12c0 1.87.51 3.63 1.4 5.14L2 22l4.99-1.31A9.96 9.96 0 0 0 12.01 22C17.53 22 22 17.52 22 12S17.53 2 12.01 2zm0 18.1c-1.67 0-3.24-.46-4.58-1.27l-.33-.2-3.29.86.88-3.2-.21-.33A8.09 8.09 0 0 1 3.9 12c0-4.48 3.64-8.11 8.11-8.11 4.47 0 8.1 3.63 8.1 8.11 0 4.48-3.63 8.1-8.1 8.1z"></path></svg>
+          {{ heroCta }}
+        </a>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="cta-final">
-  <div class="section-inner">
-    <div class="ctaband">
-      <div>
-        <h2 data-i18n="ctaband.title">Chega a tua vez.</h2>
-        <p data-i18n="ctaband.sub">A conversa começa agora, sem esperar por ninguém.</p>
+  <footer style="padding:0 24px 56px;">
+    <div style="max-width:1120px;margin:0 auto;border-top:1px solid #DCE3DB;padding-top:36px;display:flex;justify-content:space-between;align-items:flex-start;gap:32px;flex-wrap:wrap;">
+      <div style="max-width:460px;">
+        <a href="#top" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#16283A;font-weight:800;font-size:18px;letter-spacing:-0.02em;margin-bottom:12px;">
+          <span style="width:9px;height:9px;border-radius:50%;background:#B23A2E;display:inline-block;flex-shrink:0;"></span>
+          TrilhaPT
+        </a>
+        <p style="font-size:13.5px;color:#8A9A96;line-height:1.6;margin:0;text-wrap:pretty;">{{ footerNote }}</p>
       </div>
-      <a class="btn-whats" id="whatsCta2" href="#" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.96-.93-.26-.1-.46-.15-.65.14-.19.29-.75.93-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.6-1.99-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.5.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.65-1.57-.89-2.15-.23-.56-.47-.48-.65-.49-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.42 0 1.43 1.03 2.82 1.17 3.01.15.19 2.03 3.1 4.92 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.81.11.55-.08 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"/><path d="M12.01 2C6.49 2 2 6.48 2 12c0 1.87.51 3.63 1.4 5.14L2 22l4.99-1.31A9.96 9.96 0 0 0 12.01 22C17.53 22 22 17.52 22 12S17.53 2 12.01 2zm0 18.1c-1.67 0-3.24-.46-4.58-1.27l-.33-.2-3.29.86.88-3.2-.21-.33A8.09 8.09 0 0 1 3.9 12c0-4.48 3.64-8.11 8.11-8.11 4.47 0 8.1 3.63 8.1 8.11 0 4.48-3.63 8.1-8.1 8.1z"/></svg>
-        <span data-i18n="hero.cta">Falar agora no WhatsApp</span>
-      </a>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:#4B5B63;display:flex;flex-direction:column;gap:6px;text-align:right;">
+        <a href="mailto:geral@trilhapt.com" style="color:#4B5B63;text-decoration:none;border-bottom:1px solid #DCE3DB;align-self:flex-end;">{{ email }}</a>
+        <button type="button" onClick="{{ openPrivacy }}" style="align-self:flex-end;border:none;background:none;padding:0;margin:0;color:#4B5B63;font-family:'DM Mono',monospace;font-size:13px;border-bottom:1px solid #DCE3DB;cursor:pointer;" style-hover="color:#16283A;border-bottom-color:#8A9A96">{{ footerPrivacy }}</button>
+        <div>WhatsApp: +351 928 264 249</div>
+        <div style="color:#8A9A96;">&copy; 2026 TrilhaPT</div>
+      </div>
     </div>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-inner">
-    <div>
-      <a href="#top" class="brand"><span class="brand-dot"></span>TrilhaPT</a>
-      <p class="footer-note" data-i18n="footer.note">Este serviço é informativo e não substitui aconselhamento jurídico. Conteúdo verificado periodicamente junto de fontes oficiais.</p>
-    </div>
-    <div class="footer-contact">
-      <div><a href="mailto:geral@trilhapt.com" data-i18n="footer.email">geral@trilhapt.com</a></div>
-      <div><button type="button" class="privacy-link" id="openPrivacyModal" data-i18n="footer.privacy">Política de privacidade</button></div>
-      <div>WhatsApp: +351 928 264 249</div>
-      <div>&copy; 2026 TrilhaPT</div>
-    </div>
-  </div>
-</footer>
-
-</div><!-- /siteContent -->
-
-<div class="cookiebar" id="cookiebar">
-  <p data-i18n="cookie.text">Usamos cookies de análise para entender como o site é usado e melhorar o TrilhaPT.</p>
-  <div class="cookiebar-actions">
-    <button type="button" id="cookieReject" class="cookie-btn ghost" data-i18n="cookie.reject">Rejeitar</button>
-    <button type="button" id="cookieAccept" class="cookie-btn solid" data-i18n="cookie.accept">Aceitar</button>
-  </div>
+  </footer>
 </div>
+</sc-if>
 
-<div class="privacy-modal-backdrop" id="privacyModal" hidden>
-  <div class="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
-    <h2 id="privacyTitle" data-i18n="privacy.title">Política de privacidade</h2>
-    <p data-i18n="privacy.intro">No TrilhaPT recolhemos apenas os seguintes dados:</p>
-    <ul>
-      <li data-i18n="privacy.item1">Métricas de acesso ao site (ex.: visitas e idioma do navegador), via cookies de análise, apenas com consentimento.</li>
-      <li data-i18n="privacy.item2">Número de cliques no link do WhatsApp, para medir o interesse no serviço.</li>
-    </ul>
-    <p data-i18n="privacy.outro">Não recolhemos dados pessoais sensíveis através deste site.</p>
-    <button type="button" class="cookie-btn solid" id="closePrivacyModal" data-i18n="privacy.close">Fechar</button>
+<sc-if value="{{ privacyOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ backdropClick }}" style="position:fixed;inset:0;z-index:70;background:rgba(22,40,58,.5);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div role="dialog" aria-modal="true" style="width:min(580px,100%);max-height:86vh;overflow-y:auto;background:#FCFAF3;border:1px solid #E8E2D3;border-radius:20px;padding:32px 30px 28px;box-shadow:0 30px 60px -20px rgba(22,40,58,.55);">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:6px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#A8A091;">TrilhaPT</div>
+        <button type="button" aria-label="Close" onClick="{{ closePrivacy }}" style="border:1px solid #E0DACB;background:transparent;color:#8A8474;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" style-hover="border-color:#B23A2E;color:#B23A2E">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="width:14px;height:14px;display:block;"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+        </button>
+      </div>
+      <h2 style="margin:0 0 14px;font-size:26px;line-height:1.1;letter-spacing:-0.03em;font-weight:800;color:#16283A;">{{ privacyTitle }}</h2>
+      <p style="margin:0 0 18px;color:#4B5B63;font-size:15px;line-height:1.6;">{{ privacyIntro }}</p>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px;">
+        <div style="display:flex;gap:13px;align-items:flex-start;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:#A8A091;margin-top:3px;flex-shrink:0;">01</span>
+          <p style="margin:0;color:#4B5B63;font-size:14.5px;line-height:1.6;">{{ privacyItem1 }}</p>
+        </div>
+        <div style="height:1px;background:#EAE4D5;"></div>
+        <div style="display:flex;gap:13px;align-items:flex-start;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:#A8A091;margin-top:3px;flex-shrink:0;">02</span>
+          <p style="margin:0;color:#4B5B63;font-size:14.5px;line-height:1.6;">{{ privacyItem2 }}</p>
+        </div>
+      </div>
+      <p style="margin:0 0 24px;padding-top:16px;border-top:2px dashed #E0DACB;color:#4B5B63;font-size:14.5px;line-height:1.6;">{{ privacyOutro }}</p>
+      <button type="button" onClick="{{ closePrivacy }}" style="font-family:inherit;font-size:14.5px;font-weight:700;border-radius:10px;padding:12px 22px;cursor:pointer;background:#16283A;color:#fff;border:none;" style-hover="background:#22394F">{{ privacyClose }}</button>
+    </div>
   </div>
+</sc-if>
+
+<sc-if value="{{ showCookies }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:16px;right:16px;bottom:16px;z-index:50;max-width:660px;margin:0 auto;background:#16283A;color:#C7D2CE;border-radius:16px;padding:18px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;box-shadow:0 20px 44px -14px rgba(0,0,0,.45);">
+    <p style="margin:0;font-size:13.5px;line-height:1.55;flex:1;min-width:200px;">{{ cookieText }}</p>
+    <div style="display:flex;gap:10px;flex-shrink:0;">
+      <button type="button" onClick="{{ rejectCookies }}" style="font-family:inherit;font-size:13.5px;font-weight:700;border-radius:9px;padding:10px 16px;cursor:pointer;background:transparent;color:#C7D2CE;border:1px solid #3A4A52;" style-hover="border-color:#5C6E76;color:#fff">{{ cookieReject }}</button>
+      <button type="button" onClick="{{ acceptCookies }}" style="font-family:inherit;font-size:13.5px;font-weight:700;border-radius:9px;padding:10px 16px;cursor:pointer;background:#2B7A55;color:#fff;border:1px solid transparent;" style-hover="background:#33936A">{{ cookieAccept }}</button>
+    </div>
+  </div>
+</sc-if>
+
 </div>
-
-<script>
-// ============================================================
-// MODO DE MANUTENÇÃO — muda para "false" no dia do lançamento,
-// faz commit + push, e o site completo fica visível automaticamente.
-// ============================================================
-const CONFIG = {
-  WHATS_NUMBER: document.body.dataset.whatsNumber || "",
-  GA_MEASUREMENT_ID: document.body.dataset.gaMeasurementId || "",
-  MAINTENANCE_MODE: (document.body.dataset.maintenanceMode || "true").toLowerCase() === "true"
-};
-
-const translations = {
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;maintenance&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Launch&quot;},&quot;cookieBar&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Launch&quot;},&quot;ticketNumber&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;047&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Content&quot;}}">
+const DICT = {
   pt: {
-    "hero.eyebrow":"Apoio para imigrantes em Portugal · Grátis",
-    "hero.headline":"A tua senha<br>já foi chamada.",
-    "hero.lead":"Esclarece dúvidas sobre visto, documentos e processos em Portugal — a qualquer hora, sem esperar em fila. Direto no WhatsApp.",
-    "hero.cta":"Falar agora no WhatsApp",
-    "hero.t1":"Grátis","hero.t2":"Fontes oficiais verificadas","hero.t3":"Sem registo",
-    "ticket.label":"Senha","ticket.sub":"balcão · AIMA",
-    "ticket.stampring":"★ CHAMADO ★ CHAMADO ★ CHAMADO",
-    "ticket.stampword":"OK",
-    "chat.eyebrow":"Em ação","chat.title":"O que já podes perguntar",
-    "chat.subtitle":"Escreve como falas — sem termos técnicos, sem formulários.",
-    "chat.q1":"Que documentos preciso para o visto de estudante?",
-    "chat.a1":"Precisas de carta de aceitação, comprovativo de meios de subsistência, seguro de saúde, alojamento e registo criminal.",
-    "chat.src1":"Fonte: AIMA",
-    "chat.q2":"Como tiro o NIF?",
-    "chat.a2":"Pedes presencialmente num serviço de finanças, ou com um representante fiscal se ainda não estiveres em Portugal.",
-    "chat.src2":"Fonte: Portal das Finanças",
-    "topics.eyebrow":"Cobertura completa",
-    "topics.title":"Tudo o que já podes perguntar",
-    "topics.subtitle":"8 áreas, dezenas de situações reais — em português, inglês ou espanhol.",
-    "topics.c1.title":"Vistos e documentos",
-    "topics.c1.items":"Estudante · Trabalho · Procura de emprego · Taxas",
-    "topics.c2.title":"NIF e Segurança Social",
-    "topics.c2.items":"NIF com representante · NISS online · Atribuição pela AIMA",
-    "topics.c3.title":"Residência e AIMA",
-    "topics.c3.items":"Marcações · Renovações · CPLP · Reagrupamento familiar",
-    "topics.c4.title":"Saúde",
-    "topics.c4.items":"SNS · Seguro de saúde",
-    "topics.c5.title":"Carta de condução",
-    "topics.c5.items":"União Europeia · OCDE/CPLP · Outros países",
-    "topics.c6.title":"Habitação",
-    "topics.c6.items":"Arrendamento acessível · Apoiado · Concursos IHRU",
-    "topics.c7.title":"Segurança e burlas",
-    "topics.c7.items":"Alertas da PJ · Phishing bancário · Burlas de arrendamento",
-    "topics.c8.title":"Impostos (IRS)",
-    "topics.c8.items":"Código do IRS · Rendimentos do estrangeiro",
-    "topics.note":"Se a tua pergunta não estiver aqui, encaminhamos-te para apoio humano.",
-    "steps.eyebrow":"O processo","steps.title":"Como funciona",
-    "steps.n1":"01","steps.t1":"Escreves a tua dúvida","steps.d1":"Em linguagem normal, no idioma que preferires.",
-    "steps.n2":"02","steps.t2":"Recebes uma resposta verificada","steps.d2":"Baseada em fontes oficiais, nunca inventada.",
-    "steps.n3":"03","steps.t3":"És encaminhado se for preciso","steps.d3":"Casos complexos passam para apoio humano.",
-    "trust.eyebrow":"Sem letra pequena","trust.title":"Porque podes confiar",
-    "trust.i1":"<strong>Fontes oficiais</strong> — conteúdo confirmado junto da AIMA, Segurança Social e SNS.",
-    "trust.i2":"<strong>Nunca inventa</strong> — se não sabe, diz-te e encaminha-te para apoio humano.",
-    "trust.i3":"<strong>Não é aconselhamento jurídico</strong> — para casos complexos, fala sempre com um profissional.",
-    "trust.i4":"<strong>Sempre grátis</strong> — para quem usa o serviço, sem exceção.",
-    "ctaband.title":"Chega a tua vez.","ctaband.sub":"A conversa começa agora, sem esperar por ninguém.",
-    "footer.note":"Este serviço é informativo e não substitui aconselhamento jurídico. Conteúdo verificado periodicamente junto de fontes oficiais.",
-    "footer.email":"geral@trilhapt.com",
-    "footer.privacy":"Política de privacidade",
-    "cookie.text":"Usamos cookies de análise para entender como o site é usado e melhorar o TrilhaPT.",
-    "cookie.accept":"Aceitar",
-    "cookie.reject":"Rejeitar",
-    "privacy.title":"Política de privacidade",
-    "privacy.intro":"No TrilhaPT recolhemos apenas os seguintes dados:",
-    "privacy.item1":"Métricas de acesso ao site (ex.: visitas e idioma do navegador), via cookies de análise, apenas com consentimento.",
-    "privacy.item2":"Número de cliques no link do WhatsApp, para medir o interesse no serviço.",
-    "privacy.outro":"Não recolhemos dados pessoais sensíveis através deste site.",
-    "privacy.close":"Fechar",
-    "maint.eyebrow":"TrilhaPT · Portugal",
-    "maint.headline":"A preparar a tua senha.",
-    "maint.sub":"Estamos quase a abrir. Queres ser avisado no lançamento? Escreve-nos.",
+    heroEyebrow:"Apoio para imigrantes em Portugal · Grátis",
+    heroH1a:"A tua senha", heroH1b:"já foi chamada.",
+    heroLead:"Esclarece dúvidas sobre visto, documentos e processos em Portugal — a qualquer hora, sem esperar em fila. Direto no WhatsApp.",
+    heroCta:"Falar agora no WhatsApp",
+    heroT1:"Grátis", heroT2:"Fontes oficiais verificadas", heroT3:"Sem registo",
+    ticketLabel:"Senha", ticketSub:"balcão · AIMA",
+    stampRing:"★ CHAMADO ★ CHAMADO ★ CHAMADO", stampWord:"OK",
+    onlineLabel:"responde em segundos",
+    chatEyebrow:"Em ação", chatTitle:"O que já podes perguntar",
+    chatSubtitle:"Escreve como falas — sem termos técnicos, sem formulários.",
+    chatQ1:"Que documentos preciso para o visto de estudante?",
+    chatA1:"Precisas de carta de aceitação, comprovativo de meios de subsistência, seguro de saúde, alojamento e registo criminal.",
+    chatSrc1:"Fonte: AIMA",
+    chatQ2:"Como tiro o NIF?",
+    chatA2:"Pedes presencialmente num serviço de finanças, ou com um representante fiscal se ainda não estiveres em Portugal.",
+    chatSrc2:"Fonte: Portal das Finanças",
+    topicsEyebrow:"Cobertura completa", topicsTitle:"Tudo o que já podes perguntar",
+    topicsSubtitle:"8 áreas, dezenas de situações reais — em português, inglês ou espanhol.",
+    t1Title:"Vistos e documentos", t1Items:"Estudante · Trabalho · Procura de emprego · Taxas",
+    t2Title:"NIF e Segurança Social", t2Items:"NIF com representante · NISS online · Atribuição pela AIMA",
+    t3Title:"Residência e AIMA", t3Items:"Marcações · Renovações · CPLP · Reagrupamento familiar",
+    t4Title:"Saúde", t4Items:"SNS · Seguro de saúde",
+    t5Title:"Carta de condução", t5Items:"União Europeia · OCDE/CPLP · Outros países",
+    t6Title:"Habitação", t6Items:"Arrendamento acessível · Apoiado · Concursos IHRU",
+    t7Title:"Segurança e burlas", t7Items:"Alertas da PJ · Phishing bancário · Burlas de arrendamento",
+    t8Title:"Impostos (IRS)", t8Items:"Código do IRS · Rendimentos do estrangeiro",
+    topicsNote:"Se a tua pergunta não estiver aqui, indicamos-te a entidade certa para te ajudar.",
+    stepsEyebrow:"O processo", stepsTitle:"Como funciona",
+    s1Title:"Escreves a tua dúvida", s1Desc:"Em linguagem normal, no idioma que preferires.",
+    s2Title:"Recebes uma resposta verificada", s2Desc:"Baseada em fontes oficiais, nunca inventada.",
+    s3Title:"És encaminhado se for preciso", s3Desc:"Em casos complexos, indicamos a entidade certa.",
+    trustEyebrow:"Sem letra pequena", trustTitle:"Porque podes confiar",
+    trust1Strong:"Fontes oficiais", trust1Rest:" — conteúdo confirmado junto da AIMA, Segurança Social e SNS.",
+    trust2Strong:"Nunca inventa", trust2Rest:" — se não sabe, diz-te com clareza e indica a entidade certa para te ajudar.",
+    trust3Strong:"Não é aconselhamento jurídico", trust3Rest:" — para casos complexos, fala sempre com um profissional.",
+    trust4Strong:"Sempre grátis", trust4Rest:" — para quem usa o serviço, sem exceção.",
+    ctaTitle:"Chega a tua vez.", ctaSub:"A conversa começa agora, sem esperar por ninguém.",
+    footerNote:"Este serviço é informativo e não substitui aconselhamento jurídico. Conteúdo verificado periodicamente junto de fontes oficiais.",
+    footerPrivacy:"Política de privacidade",
+    privacyTitle:"Política de privacidade",
+    privacyIntro:"No TrilhaPT recolhemos apenas os seguintes dados:",
+    privacyItem1:"Métricas de acesso ao site (ex.: visitas e idioma do navegador), via cookies de análise, apenas com consentimento.",
+    privacyItem2:"Número de cliques no link do WhatsApp, para medir o interesse no serviço.",
+    privacyOutro:"Não recolhemos dados pessoais sensíveis através deste site.",
+    privacyClose:"Fechar",
+    email:"geral@trilhapt.com",
+    cookieText:"Usamos cookies de análise para entender como o site é usado e melhorar o TrilhaPT.",
+    cookieAccept:"Aceitar", cookieReject:"Rejeitar",
+    maintEyebrow:"TrilhaPT · Portugal", maintHeadline:"A preparar a tua senha.",
+    maintSub:"Estamos quase a abrir. Queres ser avisado no lançamento? Escreve-nos.",
     whatsText:"Olá! Gostaria de tirar uma dúvida."
   },
   en: {
-    "hero.eyebrow":"Support for immigrants in Portugal · Free",
-    "hero.headline":"Your number<br>just got called.",
-    "hero.lead":"Get answers about visas, documents and paperwork in Portugal — anytime, no queue required. Straight on WhatsApp.",
-    "hero.cta":"Chat now on WhatsApp",
-    "hero.t1":"Free","hero.t2":"Verified against official sources","hero.t3":"No sign-up needed",
-    "ticket.label":"Ticket","ticket.sub":"counter · AIMA",
-    "ticket.stampring":"★ CALLED ★ CALLED ★ CALLED",
-    "ticket.stampword":"OK",
-    "chat.eyebrow":"In action","chat.title":"What you can already ask",
-    "chat.subtitle":"Write the way you talk — no technical terms, no forms.",
-    "chat.q1":"What documents do I need for a student visa?",
-    "chat.a1":"You'll need an acceptance letter, proof of funds, health insurance, proof of accommodation and a criminal record certificate.",
-    "chat.src1":"Source: AIMA",
-    "chat.q2":"How do I get my NIF (tax number)?",
-    "chat.a2":"You can request it in person at a tax office, or through a fiscal representative if you're not in Portugal yet.",
-    "chat.src2":"Source: Portuguese Tax Authority",
-    "topics.eyebrow":"Full coverage",
-    "topics.title":"Everything you can already ask",
-    "topics.subtitle":"8 areas, dozens of real situations — in Portuguese, English or Spanish.",
-    "topics.c1.title":"Visas & documents",
-    "topics.c1.items":"Student · Work · Job seeking · Fees",
-    "topics.c2.title":"Tax number & Social Security",
-    "topics.c2.items":"Tax number via representative · Online social security ID · Assigned by AIMA",
-    "topics.c3.title":"Residency & AIMA",
-    "topics.c3.items":"Appointments · Renewals · CPLP · Family reunification",
-    "topics.c4.title":"Health",
-    "topics.c4.items":"National health service · Health insurance",
-    "topics.c5.title":"Driving licence",
-    "topics.c5.items":"European Union · OECD/CPLP · Other countries",
-    "topics.c6.title":"Housing",
-    "topics.c6.items":"Affordable rental · Subsidised rental · IHRU schemes",
-    "topics.c7.title":"Safety & scam alerts",
-    "topics.c7.items":"Police alerts · Banking phishing · Rental scams",
-    "topics.c8.title":"Income tax",
-    "topics.c8.items":"Tax code · Foreign income tables",
-    "topics.note":"If your question isn't here, we connect you to a real person.",
-    "steps.eyebrow":"The process","steps.title":"How it works",
-    "steps.n1":"01","steps.t1":"Send your question","steps.d1":"In plain language, in whichever language you prefer.",
-    "steps.n2":"02","steps.t2":"Get a verified answer","steps.d2":"Based on official sources, never made up.",
-    "steps.n3":"03","steps.t3":"Get connected if needed","steps.d3":"Complex cases are passed on to a real person.",
-    "trust.eyebrow":"No fine print","trust.title":"Why you can trust it",
-    "trust.i1":"<strong>Official sources</strong> — content confirmed with AIMA, Social Security and the national health service (SNS).",
-    "trust.i2":"<strong>Never makes things up</strong> — if it doesn't know, it says so and connects you to a real person.",
-    "trust.i3":"<strong>Not legal advice</strong> — for complex cases, always talk to a professional.",
-    "trust.i4":"<strong>Always free</strong> — for anyone using the service, no exceptions.",
-    "ctaband.title":"Your turn is up.","ctaband.sub":"The conversation starts now, no waiting on anyone.",
-    "footer.note":"This service is informational and does not replace legal advice. Content is periodically verified against official sources.",
-    "footer.email":"geral@trilhapt.com",
-    "footer.privacy":"Privacy policy",
-    "cookie.text":"We use analytics cookies to understand how the site is used and improve TrilhaPT.",
-    "cookie.accept":"Accept",
-    "cookie.reject":"Decline",
-    "privacy.title":"Privacy policy",
-    "privacy.intro":"At TrilhaPT, we only collect the following data:",
-    "privacy.item1":"Website access metrics (e.g. visits and browser language), through analytics cookies, only after consent.",
-    "privacy.item2":"Number of clicks on the WhatsApp link, to measure interest in the service.",
-    "privacy.outro":"We do not collect sensitive personal data through this website.",
-    "privacy.close":"Close",
-    "maint.eyebrow":"TrilhaPT · Portugal",
-    "maint.headline":"Getting your number ready.",
-    "maint.sub":"We're almost open. Want to be notified at launch? Write to us.",
+    heroEyebrow:"Support for immigrants in Portugal · Free",
+    heroH1a:"Your number", heroH1b:"just got called.",
+    heroLead:"Get answers about visas, documents and paperwork in Portugal — anytime, no queue required. Straight on WhatsApp.",
+    heroCta:"Chat now on WhatsApp",
+    heroT1:"Free", heroT2:"Verified against official sources", heroT3:"No sign-up needed",
+    ticketLabel:"Ticket", ticketSub:"counter · AIMA",
+    stampRing:"★ CALLED ★ CALLED ★ CALLED", stampWord:"OK",
+    onlineLabel:"replies in seconds",
+    chatEyebrow:"In action", chatTitle:"What you can already ask",
+    chatSubtitle:"Write the way you talk — no technical terms, no forms.",
+    chatQ1:"What documents do I need for a student visa?",
+    chatA1:"You'll need an acceptance letter, proof of funds, health insurance, proof of accommodation and a criminal record certificate.",
+    chatSrc1:"Source: AIMA",
+    chatQ2:"How do I get my NIF (tax number)?",
+    chatA2:"You can request it in person at a tax office, or through a fiscal representative if you're not in Portugal yet.",
+    chatSrc2:"Source: Portuguese Tax Authority",
+    topicsEyebrow:"Full coverage", topicsTitle:"Everything you can already ask",
+    topicsSubtitle:"8 areas, dozens of real situations — in Portuguese, English or Spanish.",
+    t1Title:"Visas & documents", t1Items:"Student · Work · Job seeking · Fees",
+    t2Title:"Tax number & Social Security", t2Items:"Tax number via representative · Online social security ID · Assigned by AIMA",
+    t3Title:"Residency & AIMA", t3Items:"Appointments · Renewals · CPLP · Family reunification",
+    t4Title:"Health", t4Items:"National health service · Health insurance",
+    t5Title:"Driving licence", t5Items:"European Union · OECD/CPLP · Other countries",
+    t6Title:"Housing", t6Items:"Affordable rental · Subsidised rental · IHRU schemes",
+    t7Title:"Safety & scam alerts", t7Items:"Police alerts · Banking phishing · Rental scams",
+    t8Title:"Income tax", t8Items:"Tax code · Foreign income tables",
+    topicsNote:"If your question isn't here, we point you to the right organisation.",
+    stepsEyebrow:"The process", stepsTitle:"How it works",
+    s1Title:"Send your question", s1Desc:"In plain language, in whichever language you prefer.",
+    s2Title:"Get a verified answer", s2Desc:"Based on official sources, never made up.",
+    s3Title:"Get connected if needed", s3Desc:"For complex cases, we point you to the right organisation.",
+    trustEyebrow:"No fine print", trustTitle:"Why you can trust it",
+    trust1Strong:"Official sources", trust1Rest:" — content confirmed with AIMA, Social Security and the national health service (SNS).",
+    trust2Strong:"Never makes things up", trust2Rest:" — if it doesn't know, it says so and points you to the right organisation.",
+    trust3Strong:"Not legal advice", trust3Rest:" — for complex cases, always talk to a professional.",
+    trust4Strong:"Always free", trust4Rest:" — for anyone using the service, no exceptions.",
+    ctaTitle:"Your turn is up.", ctaSub:"The conversation starts now, no waiting on anyone.",
+    footerNote:"This service is informational and does not replace legal advice. Content is periodically verified against official sources.",
+    footerPrivacy:"Privacy policy",
+    privacyTitle:"Privacy policy",
+    privacyIntro:"At TrilhaPT, we only collect the following data:",
+    privacyItem1:"Website access metrics (e.g. visits and browser language), through analytics cookies, only after consent.",
+    privacyItem2:"Number of clicks on the WhatsApp link, to measure interest in the service.",
+    privacyOutro:"We do not collect sensitive personal data through this website.",
+    privacyClose:"Close",
+    email:"geral@trilhapt.com",
+    cookieText:"We use analytics cookies to understand how the site is used and improve TrilhaPT.",
+    cookieAccept:"Accept", cookieReject:"Decline",
+    maintEyebrow:"TrilhaPT · Portugal", maintHeadline:"Getting your number ready.",
+    maintSub:"We're almost open. Want to be notified at launch? Write to us.",
     whatsText:"Hi! I'd like to ask a question."
   },
   es: {
-    "hero.eyebrow":"Apoyo para inmigrantes en Portugal · Gratis",
-    "hero.headline":"Tu turno<br>ya fue llamado.",
-    "hero.lead":"Resuelve tus dudas sobre visado, documentos y trámites en Portugal — a cualquier hora, sin hacer fila. Directo por WhatsApp.",
-    "hero.cta":"Habla ahora por WhatsApp",
-    "hero.t1":"Gratis","hero.t2":"Fuentes oficiales verificadas","hero.t3":"Sin registro",
-    "ticket.label":"Turno","ticket.sub":"mostrador · AIMA",
-    "ticket.stampring":"★ LLAMADO ★ LLAMADO ★ LLAMADO",
-    "ticket.stampword":"OK",
-    "chat.eyebrow":"En acción","chat.title":"Lo que ya puedes preguntar",
-    "chat.subtitle":"Escribe como hablas — sin términos técnicos, sin formularios.",
-    "chat.q1":"¿Qué documentos necesito para el visado de estudiante?",
-    "chat.a1":"Necesitas carta de aceptación, comprobante de medios económicos, seguro de salud, alojamiento y certificado de antecedentes penales.",
-    "chat.src1":"Fuente: AIMA",
-    "chat.q2":"¿Cómo saco el NIF (número fiscal)?",
-    "chat.a2":"Se solicita presencialmente en una oficina de Hacienda, o mediante un representante fiscal si aún no estás en Portugal.",
-    "chat.src2":"Fuente: Portal das Finanças",
-    "topics.eyebrow":"Cobertura completa",
-    "topics.title":"Todo lo que ya puedes preguntar",
-    "topics.subtitle":"8 áreas, decenas de situaciones reales — en portugués, inglés o español.",
-    "topics.c1.title":"Visados y documentos",
-    "topics.c1.items":"Estudiante · Trabajo · Búsqueda de empleo · Tasas",
-    "topics.c2.title":"NIF y Seguridad Social",
-    "topics.c2.items":"NIF con representante · NISS en línea · Asignación por la AIMA",
-    "topics.c3.title":"Residencia y AIMA",
-    "topics.c3.items":"Citas · Renovaciones · CPLP · Reagrupación familiar",
-    "topics.c4.title":"Salud",
-    "topics.c4.items":"Sistema nacional de salud · Seguro de salud",
-    "topics.c5.title":"Carnet de conducir",
-    "topics.c5.items":"Unión Europea · OCDE/CPLP · Otros países",
-    "topics.c6.title":"Vivienda",
-    "topics.c6.items":"Alquiler accesible · Alquiler apoyado · Concursos IHRU",
-    "topics.c7.title":"Seguridad y estafas",
-    "topics.c7.items":"Alertas policiales · Phishing bancario · Estafas de alquiler",
-    "topics.c8.title":"Impuestos (IRS)",
-    "topics.c8.items":"Código del IRS · Ingresos en el extranjero",
-    "topics.note":"Si tu pregunta no está aquí, te conectamos con una persona real.",
-    "steps.eyebrow":"El proceso","steps.title":"Cómo funciona",
-    "steps.n1":"01","steps.t1":"Escribes tu duda","steps.d1":"En lenguaje normal, en el idioma que prefieras.",
-    "steps.n2":"02","steps.t2":"Recibes una respuesta verificada","steps.d2":"Basada en fuentes oficiales, nunca inventada.",
-    "steps.n3":"03","steps.t3":"Te conectamos si hace falta","steps.d3":"Los casos complejos pasan a una persona real.",
-    "trust.eyebrow":"Sin letra pequeña","trust.title":"Por qué puedes confiar",
-    "trust.i1":"<strong>Fuentes oficiales</strong> — contenido confirmado con la AIMA, la Seguridad Social y el SNS.",
-    "trust.i2":"<strong>Nunca inventa</strong> — si no lo sabe, te lo dice y te conecta con una persona real.",
-    "trust.i3":"<strong>No es asesoramiento legal</strong> — para casos complejos, habla siempre con un profesional.",
-    "trust.i4":"<strong>Siempre gratis</strong> — para quien use el servicio, sin excepción.",
-    "ctaband.title":"Llegó tu turno.","ctaband.sub":"La conversación empieza ahora, sin esperar a nadie.",
-    "footer.note":"Este servicio es informativo y no sustituye el asesoramiento legal. Contenido verificado periódicamente en fuentes oficiales.",
-    "footer.email":"geral@trilhapt.com",
-    "footer.privacy":"Política de privacidad",
-    "cookie.text":"Usamos cookies de análisis para entender cómo se usa el sitio y mejorar TrilhaPT.",
-    "cookie.accept":"Aceptar",
-    "cookie.reject":"Rechazar",
-    "privacy.title":"Política de privacidad",
-    "privacy.intro":"En TrilhaPT solo recopilamos los siguientes datos:",
-    "privacy.item1":"Métricas de acceso al sitio (por ejemplo, visitas e idioma del navegador), mediante cookies de análisis, solo con consentimiento.",
-    "privacy.item2":"Número de clics en el enlace de WhatsApp, para medir el interés en el servicio.",
-    "privacy.outro":"No recopilamos datos personales sensibles a través de este sitio web.",
-    "privacy.close":"Cerrar",
-    "maint.eyebrow":"TrilhaPT · Portugal",
-    "maint.headline":"Preparando tu turno.",
-    "maint.sub":"Ya casi abrimos. ¿Quieres que te avisemos cuando lancemos? Escríbenos.",
+    heroEyebrow:"Apoyo para inmigrantes en Portugal · Gratis",
+    heroH1a:"Tu turno", heroH1b:"ya fue llamado.",
+    heroLead:"Resuelve tus dudas sobre visado, documentos y trámites en Portugal — a cualquier hora, sin hacer fila. Directo por WhatsApp.",
+    heroCta:"Habla ahora por WhatsApp",
+    heroT1:"Gratis", heroT2:"Fuentes oficiales verificadas", heroT3:"Sin registro",
+    ticketLabel:"Turno", ticketSub:"mostrador · AIMA",
+    stampRing:"★ LLAMADO ★ LLAMADO ★ LLAMADO", stampWord:"OK",
+    onlineLabel:"responde en segundos",
+    chatEyebrow:"En acción", chatTitle:"Lo que ya puedes preguntar",
+    chatSubtitle:"Escribe como hablas — sin términos técnicos, sin formularios.",
+    chatQ1:"¿Qué documentos necesito para el visado de estudiante?",
+    chatA1:"Necesitas carta de aceptación, comprobante de medios económicos, seguro de salud, alojamiento y certificado de antecedentes penales.",
+    chatSrc1:"Fuente: AIMA",
+    chatQ2:"¿Cómo saco el NIF (número fiscal)?",
+    chatA2:"Se solicita presencialmente en una oficina de Hacienda, o mediante un representante fiscal si aún no estás en Portugal.",
+    chatSrc2:"Fuente: Portal das Finanças",
+    topicsEyebrow:"Cobertura completa", topicsTitle:"Todo lo que ya puedes preguntar",
+    topicsSubtitle:"8 áreas, decenas de situaciones reales — en portugués, inglés o español.",
+    t1Title:"Visados y documentos", t1Items:"Estudiante · Trabajo · Búsqueda de empleo · Tasas",
+    t2Title:"NIF y Seguridad Social", t2Items:"NIF con representante · NISS en línea · Asignación por la AIMA",
+    t3Title:"Residencia y AIMA", t3Items:"Citas · Renovaciones · CPLP · Reagrupación familiar",
+    t4Title:"Salud", t4Items:"Sistema nacional de salud · Seguro de salud",
+    t5Title:"Carnet de conducir", t5Items:"Unión Europea · OCDE/CPLP · Otros países",
+    t6Title:"Vivienda", t6Items:"Alquiler accesible · Alquiler apoyado · Concursos IHRU",
+    t7Title:"Seguridad y estafas", t7Items:"Alertas policiales · Phishing bancario · Estafas de alquiler",
+    t8Title:"Impuestos (IRS)", t8Items:"Código del IRS · Ingresos en el extranjero",
+    topicsNote:"Si tu pregunta no está aquí, te conectamos con una persona real.",
+    stepsEyebrow:"El proceso", stepsTitle:"Cómo funciona",
+    s1Title:"Escribes tu duda", s1Desc:"En lenguaje normal, en el idioma que prefieras.",
+    s2Title:"Recibes una respuesta verificada", s2Desc:"Basada en fuentes oficiales, nunca inventada.",
+    s3Title:"Te conectamos si hace falta", s3Desc:"En casos complejos, te indicamos la entidad correcta.",
+    trustEyebrow:"Sin letra pequeña", trustTitle:"Por qué puedes confiar",
+    trust1Strong:"Fuentes oficiales", trust1Rest:" — contenido confirmado con la AIMA, la Seguridad Social y el SNS.",
+    trust2Strong:"Nunca inventa", trust2Rest:" — si no lo sabe, te lo dice con claridad y te indica la entidad correcta para ayudarte.",
+    trust3Strong:"No es asesoramiento legal", trust3Rest:" — para casos complejos, habla siempre con un profesional.",
+    trust4Strong:"Siempre gratis", trust4Rest:" — para quien use el servicio, sin excepción.",
+    ctaTitle:"Llegó tu turno.", ctaSub:"La conversación empieza ahora, sin esperar a nadie.",
+    footerNote:"Este servicio es informativo y no sustituye el asesoramiento legal. Contenido verificado periódicamente en fuentes oficiales.",
+    footerPrivacy:"Política de privacidad",
+    privacyTitle:"Política de privacidad",
+    privacyIntro:"En TrilhaPT solo recopilamos los siguientes datos:",
+    privacyItem1:"Métricas de acceso al sitio (por ejemplo, visitas e idioma del navegador), mediante cookies de análisis, solo con consentimiento.",
+    privacyItem2:"Número de clics en el enlace de WhatsApp, para medir el interés en el servicio.",
+    privacyOutro:"No recopilamos datos personales sensibles a través de este sitio web.",
+    privacyClose:"Cerrar",
+    email:"geral@trilhapt.com",
+    cookieText:"Usamos cookies de análisis para entender cómo se usa el sitio y mejorar TrilhaPT.",
+    cookieAccept:"Aceptar", cookieReject:"Rechazar",
+    maintEyebrow:"TrilhaPT · Portugal", maintHeadline:"Preparando tu turno.",
+    maintSub:"Ya casi abrimos. ¿Quieres que te avisemos cuando lancemos? Escríbenos.",
     whatsText:"¡Hola! Me gustaría hacer una pregunta."
   }
 };
 
-function applyLang(lang){
-  const dict = translations[lang];
-  document.documentElement.lang = lang;
+// Adding a language = add its dict above + one row here. The switcher builds itself.
+const LANGS = [
+  { code:"pt", label:"Português", short:"PT" },
+  { code:"en", label:"English",   short:"EN" },
+  { code:"es", label:"Español",   short:"ES" }
+];
 
-  document.querySelectorAll("[data-i18n]").forEach(el=>{
-    const key = el.getAttribute("data-i18n");
-    if(dict[key] !== undefined){
-      el.innerHTML = dict[key];
-    }
-  });
-
-  const waText = encodeURIComponent(dict.whatsText);
-  const waUrl = `https://wa.me/${CONFIG.WHATS_NUMBER}?text=${waText}`;
-  document.getElementById("whatsCta").href = waUrl;
-  document.getElementById("whatsCta2").href = waUrl;
-
-  document.querySelectorAll(".langsw button").forEach(btn=>{
-    btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
-  });
+// Injetado no build via atributos data-* no <body> (__WHATS_NUMBER__, __GA_MEASUREMENT_ID__, __MAINTENANCE_MODE__)
+function cfg(key, fallback){
+  const v = (document.body && document.body.dataset) ? document.body.dataset[key] : "";
+  return (v && v.indexOf("__") !== 0) ? v : fallback;
 }
+const CONFIG = {
+  get WHATS_NUMBER(){ return cfg("whatsNumber", "351928264249"); },
+  get GA_MEASUREMENT_ID(){ return cfg("gaMeasurementId", ""); },
+  get MAINTENANCE_MODE(){ return cfg("maintenanceMode", "false").toLowerCase() === "true"; }
+};
 
-document.querySelectorAll(".langsw button").forEach(btn=>{
-  btn.addEventListener("click", ()=> applyLang(btn.getAttribute("data-lang")));
-});
-
-// Deteta idioma do browser na primeira visita (sem guardar preferência entre sessões)
-const browserLang = (navigator.language || "pt").slice(0,2).toLowerCase();
-const initialLang = translations[browserLang] ? browserLang : "pt";
-applyLang(initialLang);
-
-// ---------- Modo de manutenção ----------
-if(CONFIG.MAINTENANCE_MODE){
-  document.getElementById("maintenanceScreen").classList.add("show");
-  document.getElementById("siteContent").style.display = "none";
-}
-
-// ---------- Google Analytics: evento de clique no WhatsApp ----------
-function trackWhatsAppClick(source){
-  if(typeof window.gtag === "function"){
-    window.gtag("event", "whatsapp_click", {
-      source: source,              // "hero" ou "cta_band"
-      language: document.documentElement.lang
-    });
-  }
-}
-document.getElementById("whatsCta").addEventListener("click", ()=> trackWhatsAppClick("hero"));
-document.getElementById("whatsCta2").addEventListener("click", ()=> trackWhatsAppClick("cta_band"));
-
-// ---------- Google Analytics (GA4), só carrega após consentimento ----------
 function getCookie(name){
   try{
-    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-    return match ? decodeURIComponent(match[2]) : null;
+    const m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+    return m ? decodeURIComponent(m[2]) : null;
   }catch(e){ return null; }
 }
 function setCookie(name, value, days){
   try{
     const d = new Date();
-    d.setTime(d.getTime() + days*24*60*60*1000);
-    document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
-  }catch(e){ /* cookies bloqueados neste contexto (ex: pré-visualização) - ignora */ }
+    d.setTime(d.getTime() + days*864e5);
+    document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + d.toUTCString() + ";path=/;SameSite=Lax";
+  }catch(e){}
 }
-
 function loadAnalytics(){
-  if(!CONFIG.GA_MEASUREMENT_ID){
-    console.warn("TrilhaPT: GA_MEASUREMENT_ID não configurado - Analytics não vai carregar.");
-    return;
-  }
+  const id = CONFIG.GA_MEASUREMENT_ID;
+  if(!id){ console.warn("TrilhaPT: GA_MEASUREMENT_ID não configurado - Analytics não vai carregar."); return; }
   const s = document.createElement("script");
   s.async = true;
-  s.src = `https://www.googletagmanager.com/gtag/js?id=${CONFIG.GA_MEASUREMENT_ID}`;
+  s.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
   document.head.appendChild(s);
   window.dataLayer = window.dataLayer || [];
   window.gtag = function(){ window.dataLayer.push(arguments); };
   window.gtag("js", new Date());
-  window.gtag("config", CONFIG.GA_MEASUREMENT_ID);
+  window.gtag("config", id);
 }
 
-function initCookieConsent(){
-  const bar = document.getElementById("cookiebar");
-  const consent = getCookie("trilhapt_consent");
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const nav = (navigator.language || "pt").slice(0,2).toLowerCase();
+    this.state = { lang: DICT[nav] ? nav : "pt", cookies: null, langOpen: false, privacyOpen: false };
+    this.onKeyDown = (e) => {
+      if(e.key === "Escape") this.setState({ privacyOpen:false, langOpen:false });
+    };
+    this.onDocClick = (e) => {
+      if(this.state.langOpen && !e.target.closest("[aria-haspopup='listbox']")) this.setState({ langOpen:false });
+    };
+  }
 
-  if(consent === "accepted"){ loadAnalytics(); return; }
-  if(consent === "rejected"){ return; }
+  componentDidMount(){
+    const consent = getCookie("trilhapt_consent");
+    if(consent === "accepted") loadAnalytics();
+    this.setState({ cookies: consent });
+    document.documentElement.lang = this.state.lang;
+    document.addEventListener("click", this.onDocClick);
+    document.addEventListener("keydown", this.onKeyDown);
+  }
 
-  bar.classList.add("show");
+  componentWillUnmount(){
+    document.removeEventListener("click", this.onDocClick);
+    document.removeEventListener("keydown", this.onKeyDown);
+  }
 
-  document.getElementById("cookieAccept").addEventListener("click", ()=>{
-    setCookie("trilhapt_consent", "accepted", 180);
-    bar.classList.remove("show");
-    loadAnalytics();
-  });
-  document.getElementById("cookieReject").addEventListener("click", ()=>{
-    setCookie("trilhapt_consent", "rejected", 180);
-    bar.classList.remove("show");
-  });
+  setLang(l){
+    document.documentElement.lang = l;
+    this.setState({ lang: l });
+  }
+
+  track(source){
+    if(typeof window.gtag === "function"){
+      window.gtag("event", "whatsapp_click", { source: source, language: this.state.lang });
+    }
+  }
+
+  toggleLangMenu(){ this.setState(s => ({ langOpen: !s.langOpen })); }
+
+  stamp(ring, word){
+    const e = React.createElement;
+    return e("svg", {
+      viewBox:"0 0 120 120",
+      style:{position:"absolute",right:"12px",bottom:"-20px",width:"108px",height:"108px",transform:"rotate(11deg)",mixBlendMode:"multiply",opacity:.9}
+    },
+      e("defs", null, e("path", {id:"stampCircle", d:"M 60,60 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"})),
+      e("circle", {cx:60, cy:60, r:50, fill:"none", stroke:"#B23A2E", strokeWidth:1.4}),
+      e("circle", {cx:60, cy:60, r:42, fill:"none", stroke:"#B23A2E", strokeWidth:1.4}),
+      e("text", {style:{fontFamily:"'DM Mono', monospace",fontSize:"9.2px",fill:"#B23A2E",letterSpacing:"2px"}},
+        e("textPath", {href:"#stampCircle", startOffset:"0%"}, ring)),
+      e("text", {x:60, y:65, textAnchor:"middle", style:{fontFamily:"'DM Mono', monospace",fontSize:"15px",fill:"#B23A2E",letterSpacing:"1px"}}, word)
+    );
+  }
+
+  renderVals(){
+    const lang = this.state.lang;
+    const d = DICT[lang] || DICT.pt;
+    const maintenance = this.props.maintenance ?? CONFIG.MAINTENANCE_MODE;
+    const cookieBarEnabled = this.props.cookieBar ?? true;
+    const vals = Object.assign({}, d, {
+      ticketNumber: this.props.ticketNumber ?? "047",
+      isMaintenance: maintenance,
+      showSite: !maintenance,
+      showCookies: cookieBarEnabled && this.state.cookies !== "accepted" && this.state.cookies !== "rejected",
+      waUrl: "https://wa.me/" + CONFIG.WHATS_NUMBER + "?text=" + encodeURIComponent(d.whatsText),
+      stampSvg: this.stamp(d.stampRing, d.stampWord),
+      langShort: (LANGS.find(l => l.code === lang) || LANGS[0]).short,
+      langCodes: LANGS.map(l => l.short).join(" / "),
+      langOpen: !!this.state.langOpen,
+      toggleLang: () => this.toggleLangMenu(),
+      langOptions: LANGS.map(l => ({
+        code: l.code,
+        label: l.label,
+        short: l.short,
+        tick: l.code === lang ? "✓" : "",
+        rowStyle: "display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:none;cursor:pointer;padding:9px 12px;border-radius:9px;font-family:inherit;font-size:14px;background:"
+          + (l.code === lang ? "#F1F5F0" : "transparent")
+          + ";color:#16283A;font-weight:" + (l.code === lang ? "700" : "500") + ";",
+        select: () => { this.setLang(l.code); this.setState({ langOpen: false }); }
+      })),
+      privacyOpen: !!this.state.privacyOpen,
+      openPrivacy: () => this.setState({ privacyOpen:true }),
+      closePrivacy: () => this.setState({ privacyOpen:false }),
+      backdropClick: (e) => { if(e.target === e.currentTarget) this.setState({ privacyOpen:false }); },
+      trackHero: () => this.track("hero"),
+      trackBand: () => this.track("cta_band"),
+      acceptCookies: () => { setCookie("trilhapt_consent","accepted",180); this.setState({cookies:"accepted"}); loadAnalytics(); },
+      rejectCookies: () => { setCookie("trilhapt_consent","rejected",180); this.setState({cookies:"rejected"}); }
+    });
+    return vals;
+  }
 }
-initCookieConsent();
-
-function initPrivacyModal(){
-  const modal = document.getElementById("privacyModal");
-  const openBtn = document.getElementById("openPrivacyModal");
-  const closeBtn = document.getElementById("closePrivacyModal");
-
-  if(!modal || !openBtn || !closeBtn){ return; }
-
-  const closeModal = ()=>{
-    modal.classList.remove("show");
-    document.body.style.overflow = "";
-    setTimeout(()=>{ modal.hidden = true; }, 180);
-  };
-
-  openBtn.addEventListener("click", ()=>{
-    modal.hidden = false;
-    requestAnimationFrame(()=> modal.classList.add("show"));
-    document.body.style.overflow = "hidden";
-  });
-
-  closeBtn.addEventListener("click", closeModal);
-
-  modal.addEventListener("click", (event)=>{
-    if(event.target === modal){ closeModal(); }
-  });
-
-  document.addEventListener("keydown", (event)=>{
-    if(event.key === "Escape" && !modal.hidden){ closeModal(); }
-  });
-}
-initPrivacyModal();
 </script>
-
 </body>
 </html>
