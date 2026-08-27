@@ -36,7 +36,7 @@
       <sc-if value="{{ langOpen }}" hint-placeholder-val="{{ false }}">
         <div role="listbox" style="position:absolute;right:0;top:calc(100% + 8px);min-width:196px;max-height:288px;overflow-y:auto;background:#fff;border:1px solid #DCE3DB;border-radius:14px;padding:6px;box-shadow:0 20px 40px -18px rgba(22,40,58,.4);display:flex;flex-direction:column;gap:2px;">
           <sc-for list="{{ langOptions }}" as="opt" hint-placeholder-count="3">
-            <button type="button" role="option" onClick="{{ opt.select }}" style="{{ opt.rowStyle }}" style-hover="background:#F1F5F0">
+            <button type="button" role="option" onClick="{{ opt.select }}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:none;cursor:pointer;padding:9px 12px;border-radius:9px;font-family:inherit;font-size:14px;background:transparent;color:#16283A;font-weight:500;" style-hover="background:#F1F5F0">
               <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;color:#8A9A96;width:22px;flex-shrink:0;">{{ opt.short }}</span>
               <span style="flex:1;">{{ opt.label }}</span>
               <span style="color:#2B7A55;font-size:13px;width:12px;">{{ opt.tick }}</span>
@@ -646,9 +646,6 @@ class Component extends DCLogic {
         label: l.label,
         short: l.short,
         tick: l.code === lang ? "✓" : "",
-        rowStyle: "display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:none;cursor:pointer;padding:9px 12px;border-radius:9px;font-family:inherit;font-size:14px;background:"
-          + (l.code === lang ? "#F1F5F0" : "transparent")
-          + ";color:#16283A;font-weight:" + (l.code === lang ? "700" : "500") + ";",
         select: () => { this.setLang(l.code); this.setState({ langOpen: false }); }
       })),
       privacyOpen: !!this.state.privacyOpen,
