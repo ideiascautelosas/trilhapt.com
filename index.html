@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 </head>
-<body>
+<body data-whats-number="__WHATS_NUMBER__" data-ga-measurement-id="__GA_MEASUREMENT_ID__" data-maintenance-mode="__MAINTENANCE_MODE__">
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -586,7 +586,7 @@ class Component extends DCLogic {
   componentDidMount(){
     const consent = getCookie("trilhapt_consent");
     if(consent === "accepted") loadAnalytics();
-    this.setState({ cookies: consent });
+    this.setState({ cookies: consent, privacyOpen: false });
     document.documentElement.lang = this.state.lang;
     document.addEventListener("click", this.onDocClick);
     document.addEventListener("keydown", this.onKeyDown);
