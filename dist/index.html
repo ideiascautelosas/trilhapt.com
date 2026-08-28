@@ -1,11 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TrilhaPT | Apoio a imigrantes em Portugal no WhatsApp</title>
+<meta name="description" content="TrilhaPT ajuda imigrantes em Portugal com dúvidas sobre vistos, documentos, residência, NIF, SNS e mais, direto no WhatsApp.">
+<meta name="keywords" content="imigrantes em Portugal, apoio imigrantes, visto Portugal, AIMA, NIF Portugal, residência Portugal, documentos Portugal, WhatsApp Portugal, TrilhaPT">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://trilhapt.com/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_PT">
+<meta property="og:site_name" content="TrilhaPT">
+<meta property="og:title" content="TrilhaPT | Apoio a imigrantes em Portugal no WhatsApp">
+<meta property="og:description" content="Esclarece dúvidas sobre vistos, documentos e processos em Portugal, direto no WhatsApp.">
+<meta property="og:url" content="https://trilhapt.com/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TrilhaPT | Apoio a imigrantes em Portugal no WhatsApp">
+<meta name="twitter:description" content="Apoio para imigrantes em Portugal com respostas verificadas, sem fila, no WhatsApp.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="shortcut icon" href="/favicon.svg">
 <script src="./support.js"></script>
 </head>
-<body data-whats-number="351928264249" data-ga-measurement-id="G-TEST123456" data-maintenance-mode="true">
+<body data-whats-number="351928264249" data-ga-measurement-id="G-TEST123456" data-maintenance-mode="false">
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -533,7 +549,7 @@ const LANGS = [
   { code:"es", label:"Español",   short:"ES" }
 ];
 
-// Injetado no build via atributos data-* no <body> (351928264249, G-TEST123456, true)
+// Injetado no build via atributos data-* no <body> (351928264249, G-TEST123456, false)
 function cfg(key, fallback){
   const v = (document.body && document.body.dataset) ? document.body.dataset[key] : "";
   return (v && v.indexOf("__") !== 0) ? v : fallback;

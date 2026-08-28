@@ -1,5 +1,5 @@
 [build]
-  command = "mkdir -p dist && sed -e \"s|__WHATS_NUMBER__|${WHATS_NUMBER:-}|g\" -e \"s|__GA_MEASUREMENT_ID__|${GA_MEASUREMENT_ID:-}|g\" -e \"s|__MAINTENANCE_MODE__|${MAINTENANCE_MODE:-true}|g\" index.html > dist/index.html && cp support.js dist/support.js"
+  command = "mkdir -p dist && sed -e \"s|__WHATS_NUMBER__|${WHATS_NUMBER:-}|g\" -e \"s|__GA_MEASUREMENT_ID__|${GA_MEASUREMENT_ID:-}|g\" -e \"s|__MAINTENANCE_MODE__|${MAINTENANCE_MODE:-true}|g\" index.html > dist/index.html && cp support.js favicon.svg dist/"
   publish = "dist"
 
 [[headers]]

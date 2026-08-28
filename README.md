@@ -11,6 +11,7 @@ Landing page estática do TrilhaPT, com:
 ## Estrutura
 
 - `index.html`: página única (HTML, CSS e JS)
+- `favicon.svg`: favicon do site
 - `netlify.toml`: build/deploy no Netlify
 
 ## Variáveis de ambiente (Netlify)
@@ -53,7 +54,7 @@ Como o projeto é estático, podes abrir o `index.html` diretamente no navegador
 Se quiseres simular a injeção de variáveis localmente, executa:
 
 ```bash
-mkdir -p dist && sed -e "s|__WHATS_NUMBER__|351928264249|g" -e "s|__GA_MEASUREMENT_ID__|G-XXXXXXXXXX|g" -e "s|__MAINTENANCE_MODE__|false|g" index.html > dist/index.html
+mkdir -p dist && sed -e "s|__WHATS_NUMBER__|351928264249|g" -e "s|__GA_MEASUREMENT_ID__|G-XXXXXXXXXX|g" -e "s|__MAINTENANCE_MODE__|false|g" index.html > dist/index.html && cp support.js favicon.svg dist/
 ```
 
 E abre `dist/index.html`.
